@@ -1,0 +1,56 @@
+{
+  "version": "1.0",
+  "totalWords": 500,
+  "packs": [
+    {
+      "id": "essential",
+      "name": "Essential GRE",
+      "filename": "essential.json",
+      "wordCount": 100,
+      "difficulty": "Common",
+      "frequency": "Essential",
+      "description": "Must-know words that appear on 70%+ of GRE tests",
+      "isDefault": true
+    },
+    {
+      "id": "high_frequency",
+      "name": "High Frequency",
+      "filename": "high_frequency.json",
+      "wordCount": 150,
+      "difficulty": "Common",
+      "frequency": "Common",
+      "description": "Frequently tested words (50-70% of tests)",
+      "isDefault": true
+    },
+    {
+      "id": "advanced",
+      "name": "Advanced",
+      "filename": "advanced.json",
+      "wordCount": 150,
+      "difficulty": "Advanced",
+      "frequency": "Uncommon",
+      "description": "Challenging words for competitive scores",
+      "isDefault": true
+    },
+    {
+      "id": "expert",
+      "name": "Expert",
+      "filename": "expert.json",
+      "wordCount": 100,
+      "difficulty": "Expert",
+      "frequency": "Rare",
+      "description": "Rare words for 330+ scores",
+      "isDefault": false
+    },
+    {
+      "id": "roots",
+      "name": "Word Roots",
+      "filename": "roots.json",
+      "wordCount": 50,
+      "difficulty": "Common",
+      "frequency": "Essential",
+      "description": "Learn Latin/Greek roots to decode unknown words",
+      "isDefault": false
+    }
+  ]
+}

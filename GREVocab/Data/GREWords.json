@@ -1,0 +1,716 @@
+[
+  {
+    "term": "prosaic",
+    "definition": "dull and lacking imagination",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The prosaic lecture failed to engage the audience.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "bolster",
+    "definition": "support and strengthen",
+    "partOfSpeech": "v.",
+    "exampleSentence": "New evidence bolstered his argument.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "perfunctory",
+    "definition": "done routinely and with little interest or care",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "She gave a perfunctory nod before leaving.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "reticent",
+    "definition": "reluctant to draw attention to yourself",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "He remained reticent about his past achievements.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "gainsay",
+    "definition": "deny or contradict",
+    "partOfSpeech": "v.",
+    "exampleSentence": "No one could gainsay the evidence presented.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "garrulous",
+    "definition": "full of trivial conversation",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The garrulous neighbor talked for hours about nothing.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "erudite",
+    "definition": "having or showing profound knowledge",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The erudite professor impressed everyone with her insights.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "precipitate",
+    "definition": "bring about abruptly",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The scandal precipitated his resignation.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "gregarious",
+    "definition": "temperamentally seeking and enjoying the company of others",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her gregarious personality made her popular at parties.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "diffidence",
+    "definition": "lack of self-confidence",
+    "partOfSpeech": "n.",
+    "exampleSentence": "His diffidence prevented him from speaking up.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "prevaricate",
+    "definition": "be deliberately ambiguous or unclear",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Politicians often prevaricate when asked direct questions.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "gullible",
+    "definition": "naive and easily deceived or tricked",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The gullible customer fell for the scam.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "laudable",
+    "definition": "worthy of high praise",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her laudable efforts improved the community.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "polyglot",
+    "definition": "a person who speaks more than one language",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The polyglot translator spoke seven languages fluently.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "denigrate",
+    "definition": "charge falsely or with malicious intent",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Critics tried to denigrate his achievements.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "obsequious",
+    "definition": "attempting to win favor from influential people by flattery",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The obsequious assistant agreed with everything the boss said.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "adulterate",
+    "definition": "make impure by adding a foreign or inferior substance",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The company was fined for adulterating their products.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "pragmatic",
+    "definition": "concerned with practical matters",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "She took a pragmatic approach to solving the problem.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "implacable",
+    "definition": "incapable of being placated",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His implacable enemy refused any peace offerings.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "ostentatious",
+    "definition": "intended to attract notice and impress others",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The ostentatious display of wealth drew criticism.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "guile",
+    "definition": "the use of tricks to deceive someone",
+    "partOfSpeech": "n.",
+    "exampleSentence": "He achieved success through guile rather than talent.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "assuage",
+    "definition": "provide physical relief, as from pain",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Nothing could assuage her grief.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "laconic",
+    "definition": "brief and to the point",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His laconic responses revealed little about his thoughts.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "enervate",
+    "definition": "weaken mentally or morally",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The tropical heat enervated the travelers.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "gourmand",
+    "definition": "a person who is devoted to eating and drinking to excess",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The gourmand sampled every dish at the buffet.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "misanthrope",
+    "definition": "someone who dislikes people in general",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The misanthrope preferred the company of books to people.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "proliferate",
+    "definition": "grow rapidly",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Social media platforms have proliferated in recent years.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "euphoria",
+    "definition": "a feeling of great elation",
+    "partOfSpeech": "n.",
+    "exampleSentence": "Winning the championship filled them with euphoria.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "vacillate",
+    "definition": "be undecided about something",
+    "partOfSpeech": "v.",
+    "exampleSentence": "She vacillated between the two job offers.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "goad",
+    "definition": "provoke as by constant criticism",
+    "partOfSpeech": "v.",
+    "exampleSentence": "They tried to goad him into making a mistake.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "lethargic",
+    "definition": "deficient in alertness or activity",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The hot weather made everyone feel lethargic.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "philanthropic",
+    "definition": "of or relating to voluntary action for the public good",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her philanthropic donations helped many charities.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "homogeneous",
+    "definition": "all of the same or similar kind or nature",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The homogeneous mixture had uniform properties.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "desiccate",
+    "definition": "remove water from",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The sun desiccated the exposed soil.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "ephemeral",
+    "definition": "lasting a very short time",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Fame can be ephemeral in the entertainment industry.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "engender",
+    "definition": "call forth",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The policy engendered widespread controversy.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "advocate",
+    "definition": "a person who pleads for a person, cause, or idea",
+    "partOfSpeech": "n.",
+    "exampleSentence": "She became an advocate for environmental protection.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "audacious",
+    "definition": "disposed to venture or take risks",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The audacious plan surprised everyone.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "paradox",
+    "definition": "a statement that contradicts itself",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The time travel story created an interesting paradox.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "malleable",
+    "definition": "capable of being shaped or bent or drawn out",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Gold is highly malleable and can be shaped easily.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "antipathy",
+    "definition": "a feeling of intense dislike",
+    "partOfSpeech": "n.",
+    "exampleSentence": "There was clear antipathy between the rival teams.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "verbose",
+    "definition": "using or containing too many words",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His verbose writing style made the report tedious.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "volatile",
+    "definition": "liable to lead to sudden change or violence",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The volatile market kept investors on edge.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "mitigate",
+    "definition": "make less severe or harsh",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The new measures helped mitigate the risks.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "pedant",
+    "definition": "a person who pays more attention to formal rules and book learning than they merit",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The pedant corrected every minor grammatical error.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "enigma",
+    "definition": "something that baffles understanding and cannot be explained",
+    "partOfSpeech": "n.",
+    "exampleSentence": "Her disappearance remains an enigma to this day.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "zeal",
+    "definition": "a feeling of strong eagerness",
+    "partOfSpeech": "n.",
+    "exampleSentence": "She pursued her goals with remarkable zeal.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "apathy",
+    "definition": "an absence of emotion or enthusiasm",
+    "partOfSpeech": "n.",
+    "exampleSentence": "Voter apathy led to low turnout.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "placid",
+    "definition": "not easily irritated",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The placid lake reflected the mountains perfectly.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "corroborate",
+    "definition": "support with evidence or authority",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Witnesses corroborated her account of events.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "lavish",
+    "definition": "very generous",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "They hosted a lavish celebration.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "propriety",
+    "definition": "correct behavior",
+    "partOfSpeech": "n.",
+    "exampleSentence": "She always maintained strict propriety in public.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "fawn",
+    "definition": "try to gain favor by cringing or flattering",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Employees who fawn over the boss are rarely respected.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "venerate",
+    "definition": "regard with feelings of respect and reverence",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Many cultures venerate their ancestors.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "cacophony",
+    "definition": "loud confusing disagreeable sounds",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The cacophony of car horns filled the street.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "deride",
+    "definition": "treat or speak of with contempt",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Critics derided the film as pretentious.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "ingenuous",
+    "definition": "lacking in sophistication or worldliness",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her ingenuous questions revealed her inexperience.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "iconoclast",
+    "definition": "somebody who attacks cherished beliefs or institutions",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The iconoclast challenged traditional artistic norms.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "dissonance",
+    "definition": "disagreeable sounds",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The dissonance in modern music can be jarring.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "equivocate",
+    "definition": "be deliberately ambiguous or unclear in order to mislead",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The witness seemed to equivocate under questioning.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "obdurate",
+    "definition": "stubbornly persistent in wrongdoing",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The obdurate child refused to apologize.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "anomalous",
+    "definition": "deviating from the general or common order or type",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The anomalous data point skewed the results.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "laud",
+    "definition": "praise, glorify, or honor",
+    "partOfSpeech": "v.",
+    "exampleSentence": "Critics lauded her performance as groundbreaking.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "capricious",
+    "definition": "determined by chance or impulse or whim rather than by necessity or reason",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The capricious weather made planning difficult.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "erudition",
+    "definition": "profound scholarly knowledge",
+    "partOfSpeech": "n.",
+    "exampleSentence": "His erudition was evident in every lecture.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "abate",
+    "definition": "become less in amount or intensity",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The storm showed no signs of abating.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "abscond",
+    "definition": "run away, usually includes taking something along",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The treasurer absconded with the company funds.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "eloquent",
+    "definition": "expressing yourself readily, clearly, effectively",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her eloquent speech moved the audience to tears.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "loquacious",
+    "definition": "full of trivial conversation",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The loquacious guest dominated every conversation.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "contrite",
+    "definition": "feeling regret for a fault or offence",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "He appeared genuinely contrite after the incident.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "inculpate",
+    "definition": "suggest that someone is guilty",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The evidence seemed to inculpate the suspect.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "paucity",
+    "definition": "a lack of something",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The paucity of resources hampered the project.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "anachronism",
+    "definition": "something that is inappropriate for the given time period",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The telephone in the medieval film was an anachronism.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "nonplussed",
+    "definition": "unsure how to act or respond",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "She was nonplussed by the unexpected question.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "artless",
+    "definition": "without guile; open and honest",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His artless manner charmed everyone he met.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "hegemony",
+    "definition": "dominance over a certain area",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The empire sought hegemony over the region.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "prolix",
+    "definition": "unnecessarily long",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His prolix explanations tested everyone's patience.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "pundit",
+    "definition": "an expert in a specific field",
+    "partOfSpeech": "n.",
+    "exampleSentence": "Political pundits debated the election results.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "confound",
+    "definition": "be confusing or perplexing to",
+    "partOfSpeech": "v.",
+    "exampleSentence": "The puzzle confounded even the experts.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "frugality",
+    "definition": "the quality of being economical with money or food",
+    "partOfSpeech": "n.",
+    "exampleSentence": "Her frugality allowed her to save for retirement.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "harangue",
+    "definition": "a long, strongly expressed speech or lecture",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The manager's harangue lasted nearly an hour.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "banal",
+    "definition": "repeated too often; overfamiliar through overuse",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The film was full of banal dialogue.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "veracious",
+    "definition": "truthful",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The veracious account matched all known facts.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "aberrant",
+    "definition": "markedly different from an accepted norm",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His aberrant behavior concerned his colleagues.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "mundane",
+    "definition": "found in the ordinary course of events",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "She longed to escape her mundane routine.",
+    "difficulty": "Common"
+  },
+  {
+    "term": "parsimonious",
+    "definition": "unwilling to spend money or use resources",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The parsimonious landlord refused all repairs.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "pusillanimous",
+    "definition": "lacking courage or resolution; cowardly",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His pusillanimous response disappointed his supporters.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "ebullient",
+    "definition": "joyfully unrestrained",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "Her ebullient personality brightened the room.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "exculpate",
+    "definition": "pronounce not guilty of criminal charges",
+    "partOfSpeech": "v.",
+    "exampleSentence": "New evidence exculpated the wrongly accused man.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "garrulity",
+    "definition": "the quality of being wordy and talkative",
+    "partOfSpeech": "n.",
+    "exampleSentence": "His garrulity made meetings run overtime.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "impertinent",
+    "definition": "being disrespectful; improperly forward or bold",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The impertinent remark offended the host.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "mendacity",
+    "definition": "the tendency to be untruthful",
+    "partOfSpeech": "n.",
+    "exampleSentence": "His mendacity eventually destroyed his reputation.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "prevarication",
+    "definition": "the fact of prevaricating or lying",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The witness's prevarication was obvious to all.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "sanctimonious",
+    "definition": "making a show of being morally superior to other people",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His sanctimonious attitude alienated his friends.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "solicitous",
+    "definition": "showing hovering attentiveness",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The solicitous nurse checked on patients frequently.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "approbation",
+    "definition": "approval or praise",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The proposal received universal approbation.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "insipid",
+    "definition": "lacking interest or flavor",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The insipid meal disappointed the food critic.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "ascetic",
+    "definition": "practicing self-denial",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The monk led an ascetic lifestyle.",
+    "difficulty": "Advanced"
+  },
+  {
+    "term": "acrimony",
+    "definition": "bitterness and ill will",
+    "partOfSpeech": "n.",
+    "exampleSentence": "The divorce was marked by considerable acrimony.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "calumny",
+    "definition": "a false and slanderous statement",
+    "partOfSpeech": "n.",
+    "exampleSentence": "She sued the newspaper for publishing calumny.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "mercurial",
+    "definition": "subject to sudden or unpredictable changes of mood or mind",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "His mercurial temperament made him difficult to work with.",
+    "difficulty": "Expert"
+  },
+  {
+    "term": "fallacious",
+    "definition": "of a belief that is based on faulty reasoning",
+    "partOfSpeech": "adj.",
+    "exampleSentence": "The argument was based on fallacious assumptions.",
+    "difficulty": "Expert"
+  }
+]

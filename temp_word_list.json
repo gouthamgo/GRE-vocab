@@ -1,0 +1,419 @@
+{
+    "words": [
+        {
+            "word": "prosaic",
+            "meaning": "dull and lacking imagination"
+        },
+        {
+            "word": "bolster",
+            "meaning": "support and strengthen"
+        },
+        {
+            "word": "perfunctory",
+            "meaning": "done routinely and with little interest or care"
+        },
+        {
+            "word": "reticent",
+            "meaning": "reluctant to draw attention to yourself"
+        },
+        {
+            "word": "gainsay",
+            "meaning": "deny or contradict"
+        },
+        {
+            "word": "garrulous",
+            "meaning": "full of trivial conversation"
+        },
+        {
+            "word": "erudite",
+            "meaning": "having or showing profound knowledge"
+        },
+        {
+            "word": "precipitate",
+            "meaning": "bring about abruptly"
+        },
+        {
+            "word": "gregarious",
+            "meaning": "temperamentally seeking and enjoying the company of others"
+        },
+        {
+            "word": "diffidence",
+            "meaning": "lack of self-confidence"
+        },
+        {
+            "word": "prevaricate",
+            "meaning": "be deliberately ambiguous or unclear"
+        },
+        {
+            "word": "gullible",
+            "meaning": "naive and easily deceived or tricked"
+        },
+        {
+            "word": "laudable",
+            "meaning": "worthy of high praise"
+        },
+        {
+            "word": "polyglot",
+            "meaning": "a person who speaks more than one language"
+        },
+        {
+            "word": "denigrate",
+            "meaning": "charge falsely or with malicious intent"
+        },
+        {
+            "word": "obsequious",
+            "meaning": "attempting to win favor from influential people by flattery"
+        },
+        {
+            "word": "adulterate",
+            "meaning": "make impure by adding a foreign or inferior substance"
+        },
+        {
+            "word": "pragmatic",
+            "meaning": "concerned with practical matters"
+        },
+        {
+            "word": "implacable",
+            "meaning": "incapable of being placated"
+        },
+        {
+            "word": "ostentatious",
+            "meaning": "intended to attract notice and impress others"
+        },
+        {
+            "word": "guile",
+            "meaning": "the use of tricks to deceive someone"
+        },
+        {
+            "word": "assuage",
+            "meaning": "provide physical relief, as from pain"
+        },
+        {
+            "word": "laconic",
+            "meaning": "brief and to the point"
+        },
+        {
+            "word": "enervate",
+            "meaning": "weaken mentally or morally"
+        },
+        {
+            "word": "gourmand",
+            "meaning": "a person who is devoted to eating and drinking to excess"
+        },
+        {
+            "word": "misanthrope",
+            "meaning": "someone who dislikes people in general"
+        },
+        {
+            "word": "proliferate",
+            "meaning": "grow rapidly"
+        },
+        {
+            "word": "euphoria",
+            "meaning": "a feeling of great elation"
+        },
+        {
+            "word": "vacillate",
+            "meaning": "be undecided about something"
+        },
+        {
+            "word": "goad",
+            "meaning": "provoke as by constant criticism"
+        },
+        {
+            "word": "lethargic",
+            "meaning": "deficient in alertness or activity"
+        },
+        {
+            "word": "philanthropic",
+            "meaning": "of or relating to voluntary action for the public good"
+        },
+        {
+            "word": "homogeneous",
+            "meaning": "all of the same or similar kind or nature"
+        },
+        {
+            "word": "desiccate",
+            "meaning": "remove water from"
+        },
+        {
+            "word": "ephemeral",
+            "meaning": "lasting a very short time"
+        },
+        {
+            "word": "engender",
+            "meaning": "call forth"
+        },
+        {
+            "word": "advocate",
+            "meaning": "a person who pleads for a person, cause, or idea"
+        },
+        {
+            "word": "audacious",
+
+            "meaning": "disposed to venture or take risks"
+        },
+        {
+            "word": "paradox",
+            "meaning": "(logic) a statement that contradicts itself"
+        },
+        {
+            "word": "malleable",
+            "meaning": "capable of being shaped or bent or drawn out"
+        },
+        {
+            "word": "antipathy",
+            "meaning": "a feeling of intense dislike"
+        },
+        {
+            "word": "verbose",
+            "meaning": "using or containing too many words"
+        },
+        {
+            "word": "volatile",
+            "meaning": "liable to lead to sudden change or violence"
+        },
+        {
+            "word": "mitigate",
+            "meaning": "make less severe or harsh"
+        },
+        {
+            "word": "pedant",
+            "meaning": "a person who pays more attention to formal rules and book learning than they merit"
+        },
+        {
+            "word": "enigma",
+            "meaning": "something that baffles understanding and cannot be explained"
+        },
+        {
+            "word": "zeal",
+            "meaning": "a feeling of strong eagerness"
+        },
+        {
+            "word": "apathy",
+            "meaning": "an absence of emotion or enthusiasm"
+        },
+        {
+            "word": "placid",
+            "meaning": "not easily irritated"
+        },
+        {
+            "word": "corroborate",
+            "meaning": "support with evidence or authority or make more certain or confirm"
+        },
+        {
+            "word": "lavish",
+            "meaning": "very generous"
+        },
+        {
+            "word": "propriety",
+            "meaning": "correct behavior"
+        },
+        {
+            "word": "fawn",
+            "meaning": "try to gain favor by cringing or flattering"
+        },
+        {
+            "word": "venerate",
+            "meaning": "regard with feelings of respect and reverence"
+        },
+        {
+            "word": "cacophony",
+            "meaning": "loud confusing disagreeable sounds"
+        },
+        {
+            "word": "deride",
+            "meaning": "treat or speak of with contempt"
+        },
+        {
+            "word": "ingenuous",
+            "meaning": "lacking in sophistication or worldliness"
+        },
+        {
+            "word": "iconoclast",
+            "meaning": "somebody who attacks cherished beliefs or institutions"
+        },
+        {
+            "word": "dissonance",
+            "meaning": "disagreeable sounds"
+        },
+        {
+            "word": "equivocate",
+            "meaning": "be deliberately ambiguous or unclear in order to mislead or withhold information"
+        },
+        {
+            "word": "obdurate",
+            "meaning": "stubbornly persistent in wrongdoing"
+        },
+        {
+            "word": "anomalous",
+            "meaning": "deviating from the general or common order or type"
+        },
+        {
+            "word": "laud",
+            "meaning": "praise, glorify, or honor"
+        },
+        {
+            "word": "capricious",
+            "meaning": "determined by chance or impulse or whim rather than by necessity or reason"
+        },
+        {
+            "word": "erudition",
+            "meaning": "profound scholarly knowledge"
+        },
+        {
+            "word": "abate",
+            "meaning": "become less in amount or intensity"
+        },
+        {
+            "word": "abscond",
+            "meaning": "run away, usually includes taking something or somebody along"
+        },
+        {
+            "word": "eloquent",
+            "meaning": "expressing yourself readily, clearly, effectively"
+        },
+        {
+            "word": "loquacious",
+            "meaning": "full of trivial conversation"
+        }
+    ],
+    "advanced_words": [
+        {
+            "word": "contrite",
+            "meaning": "feeling regret for a fault or offence"
+        },
+        {
+            "word": "inculpate",
+            "meaning": "suggest that someone is guilty"
+        },
+        {
+            "word": "paucity",
+            "meaning": "a lack of something"
+        },
+        {
+            "word": "anachronism",
+            "meaning": "something that is inappropriate for the given time period"
+        },
+        {
+            "word": "nonplussed",
+            "meaning": "unsure how to act or respond"
+        },
+        {
+            "word": "artless",
+            "meaning": "without guile; open and honest"
+        },
+        {
+            "word": "hegemony",
+            "meaning": "dominance over a certain area"
+        },
+        {
+            "word": "prolix",
+            "meaning": "unnecessarily long"
+        },
+        {
+            "word": "pundit",
+            "meaning": "an expert in a specific field"
+        },
+        {
+            "word": "confound",
+            "meaning": "be confusing or perplexing to"
+        },
+        {
+            "word": "frugality",
+            "meaning": "the quality of being economical with money or food; thriftiness."
+        },
+        {
+            "word": "harangue",
+            "meaning": "a long, strongly expressed speech or lecture"
+        },
+        {
+            "word": "banal",
+            "meaning": "repeated too often; overfamiliar through overuse"
+        },
+        {
+            "word": "veracious",
+            "meaning": "truthful"
+        },
+        {
+            "word": "aberrant",
+            "meaning": "markedly different from an accepted norm"
+        },
+        {
+            "word": "mundane",
+            "meaning": "found in the ordinary course of events"
+        },
+        {
+            "word": "parsimonious",
+            "meaning": "unwilling to spend money or use resources; stingy or frugal."
+        },
+        {
+            "word": "arbitrary",
+            "meaning": "based on a random, groundless decision"
+        },
+        {
+            "word": "pusillanimous",
+            "meaning": "lacking courage or resolution; cowardly"
+        },
+        {
+            "word": "ebullient",
+            "meaning": "joyfully unrestrained"
+        },
+        {
+            "word": "exculpate",
+            "meaning": "pronounce not guilty of criminal charges"
+        },
+        {
+            "word": "garrulity",
+            "meaning": "the quality of being wordy and talkative"
+        },
+        {
+            "word": "impertinent",
+            "meaning": "being disrespectful; improperly forward or bold"
+        },
+        {
+            "word": "mendacity",
+            "meaning": "the tendency to be untruthful"
+        },
+        {
+            "word": "prevarication",
+            "meaning": "the fact of prevaricating or lying"
+        },
+        {
+            "word": "sanctimonious",
+            "meaning": "making a show of being morally superior to other people"
+        },
+        {
+            "word": "solicitous",
+            "meaning": "showing hovering attentiveness"
+        },
+        {
+            "word": "approbation",
+            "meaning": "approval or praise"
+        },
+        {
+            "word": "insipid",
+            "meaning": "lacking interest or flavor"
+        },
+        {
+            "word": "ascetic",
+            "meaning": "practicing self-denial"
+        },
+        {
+            "word": "acrimony",
+            "meaning": "bitterness and ill will"
+        },
+        {
+            "word": "calumny",
+            "meaning": "a false and slanderous statement"
+        },
+        {
+            "word": "mercurial",
+            "meaning": "(of a person) subject to sudden or unpredictable changes of mood or mind"
+        },
+        {
+            "word": "fallacious",
+            "meaning": "of a belief that is based on faulty reasoning"
+        }
+    ]
+}
