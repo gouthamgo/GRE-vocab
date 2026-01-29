@@ -407,6 +407,6 @@ struct PreviewModeView: View {
 }
 
 #Preview {
-    PreviewModeView(deck: Deck(name: "Test", difficulty: .common))
+    PreviewModeView(deck: Deck(name: "Test", difficulty: .medium))
         .modelContainer(for: [Word.self, Deck.self], inMemory: true)
 }

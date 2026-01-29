@@ -93,20 +93,19 @@ class DataService: DataServiceProtocol {
         return manifest.packs
     }
 
-    /// Load words from legacy JSON file (backward compatibility)
+    /// Load words from GREWords.json (primary source with 1729 words)
     func loadWordsFromJSON() throws -> [WordData] {
-        // First try modular word packs
-        do {
-            let words = try loadWordsFromWordPacks()
-            if !words.isEmpty {
-                return words
-            }
-        } catch {
-            print("Modular loading failed, falling back to legacy: \(error)")
-        }
-
-        // Fallback to legacy GREWords.json
+        // Load from GREWords.json directly for full vocabulary
         guard let url = Bundle.main.url(forResource: "GREWords", withExtension: "json") else {
+            // Fallback to word packs if GREWords.json not found
+            do {
+                let words = try loadWordsFromWordPacks()
+                if !words.isEmpty {
+                    return words
+                }
+            } catch {
+                print("Word pack loading failed: \(error)")
+            }
             throw DataServiceError.fileNotFound("GREWords.json")
         }
 
@@ -141,29 +140,29 @@ class DataService: DataServiceProtocol {
         do {
             let wordDataList = try loadWordsFromJSON()
 
+            var basicWords: [Word] = []
             var commonWords: [Word] = []
             var advancedWords: [Word] = []
-            var expertWords: [Word] = []
 
             for wordData in wordDataList {
                 let word = wordData.toWord()
                 switch word.difficulty {
-                case .common:
+                case .easy:
+                    basicWords.append(word)
+                case .medium:
                     commonWords.append(word)
-                case .advanced:
+                case .hard:
                     advancedWords.append(word)
-                case .expert:
-                    expertWords.append(word)
                 }
             }
 
-            let commonDeck = Deck(name: "Common", difficulty: .common, words: commonWords)
-            let advancedDeck = Deck(name: "Advanced", difficulty: .advanced, words: advancedWords)
-            let expertDeck = Deck(name: "Expert", difficulty: .expert, words: expertWords)
+            let basicDeck = Deck(name: "Basic", difficulty: .easy, words: basicWords)
+            let commonDeck = Deck(name: "Common", difficulty: .medium, words: commonWords)
+            let advancedDeck = Deck(name: "Advanced", difficulty: .hard, words: advancedWords)
 
+            modelContext.insert(basicDeck)
             modelContext.insert(commonDeck)
             modelContext.insert(advancedDeck)
-            modelContext.insert(expertDeck)
 
             let progress = UserProgress()
             modelContext.insert(progress)
@@ -199,9 +198,9 @@ class DataService: DataServiceProtocol {
 
         do {
             let decks = try modelContext.fetch(descriptor)
-            // Sort by difficulty: Common -> Advanced -> Expert
+            // Sort by difficulty: Basic -> Common -> Advanced
             return decks.sorted { deck1, deck2 in
-                let order: [Difficulty] = [.common, .advanced, .expert]
+                let order: [Difficulty] = [.easy, .medium, .hard]
                 let index1 = order.firstIndex(of: deck1.difficulty) ?? 0
                 let index2 = order.firstIndex(of: deck2.difficulty) ?? 0
                 return index1 < index2
@@ -231,7 +230,17 @@ struct WordData: Codable {
     let source: String?
 
     func toWord() -> Word {
-        let diff = Difficulty(rawValue: difficulty) ?? .common
+        // Map JSON difficulty to Magoosh-style tiers:
+        // Common (foundational) -> Basic (easiest)
+        // Advanced (frequently tested) -> Common (middle)
+        // Expert (rare/hard) -> Advanced (hardest)
+        let diff: Difficulty
+        switch difficulty.lowercased() {
+        case "basic", "easy", "common": diff = .easy      // Basic deck
+        case "medium", "advanced": diff = .medium         // Common deck
+        case "hard", "expert": diff = .hard               // Advanced deck
+        default: diff = .medium
+        }
         let freq = FrequencyTier(rawValue: frequency ?? "Common") ?? .common
         let src = WordSource(rawValue: source ?? "Custom") ?? .custom
 

@@ -436,13 +436,14 @@ struct SettingsView: View {
 
     private func saveDailyGoal() {
         userProgress?.dailyGoal = dailyGoal
-        try? modelContext.save()
+        modelContext.trySave(operation: "save daily goal")
     }
 
     private func resetProgress() {
         // Reset all words to new status
         let descriptor = FetchDescriptor<Word>()
-        if let words = try? modelContext.fetch(descriptor) {
+        do {
+            let words = try modelContext.fetch(descriptor)
             for word in words {
                 word.status = .new
                 word.repetitions = 0
@@ -451,6 +452,8 @@ struct SettingsView: View {
                 word.lastReviewDate = nil
                 word.nextReviewDate = nil
             }
+        } catch {
+            print("Error fetching words for reset: \(error)")
         }
 
         // Reset user progress
@@ -461,57 +464,62 @@ struct SettingsView: View {
         userProgress?.totalIncorrect = 0
         userProgress?.lastStudyDate = nil
 
-        try? modelContext.save()
-        HapticManager.shared.success()
+        do {
+            try modelContext.safeSave(operation: "reset progress")
+            HapticManager.shared.success()
+        } catch {
+            print("Error saving reset progress: \(error)")
+            HapticManager.shared.warning()
+        }
     }
 
     private func rebuildDatabase() {
-        // Delete all existing decks (and their words through cascade)
-        let deckDescriptor = FetchDescriptor<Deck>()
-        if let decks = try? modelContext.fetch(deckDescriptor) {
+        do {
+            // Delete all existing decks (and their words through cascade)
+            let deckDescriptor = FetchDescriptor<Deck>()
+            let decks = try modelContext.fetch(deckDescriptor)
             for deck in decks {
                 modelContext.delete(deck)
             }
-        }
 
-        // Delete all orphaned words
-        let wordDescriptor = FetchDescriptor<Word>()
-        if let words = try? modelContext.fetch(wordDescriptor) {
+            // Delete all orphaned words
+            let wordDescriptor = FetchDescriptor<Word>()
+            let words = try modelContext.fetch(wordDescriptor)
             for word in words {
                 modelContext.delete(word)
             }
-        }
 
-        // Delete all study sessions
-        let sessionDescriptor = FetchDescriptor<StudySession>()
-        if let sessions = try? modelContext.fetch(sessionDescriptor) {
+            // Delete all study sessions
+            let sessionDescriptor = FetchDescriptor<StudySession>()
+            let sessions = try modelContext.fetch(sessionDescriptor)
             for session in sessions {
                 modelContext.delete(session)
             }
-        }
 
-        // Delete user progress
-        let progressDescriptor = FetchDescriptor<UserProgress>()
-        if let progressList = try? modelContext.fetch(progressDescriptor) {
+            // Delete user progress
+            let progressDescriptor = FetchDescriptor<UserProgress>()
+            let progressList = try modelContext.fetch(progressDescriptor)
             for progress in progressList {
                 modelContext.delete(progress)
             }
-        }
 
-        // Delete achievements
-        let achievementDescriptor = FetchDescriptor<Achievement>()
-        if let achievements = try? modelContext.fetch(achievementDescriptor) {
+            // Delete achievements
+            let achievementDescriptor = FetchDescriptor<Achievement>()
+            let achievements = try modelContext.fetch(achievementDescriptor)
             for achievement in achievements {
                 modelContext.delete(achievement)
             }
+
+            try modelContext.safeSave(operation: "rebuild database - delete all")
+
+            // Re-initialize data from JSON
+            DataService.shared.initializeDataIfNeeded(modelContext: modelContext)
+
+            HapticManager.shared.success()
+        } catch {
+            print("Error rebuilding database: \(error)")
+            HapticManager.shared.warning()
         }
-
-        try? modelContext.save()
-
-        // Re-initialize data from JSON
-        DataService.shared.initializeDataIfNeeded(modelContext: modelContext)
-
-        HapticManager.shared.success()
     }
 
     private func getTotalWords() -> Int {

@@ -20,6 +20,8 @@ struct FlashcardView: View {
     @State private var isFlipped = false
     @State private var showHint: SwipeHint? = nil
     @State private var appearAnimation = false
+    @State private var isDragging = false
+    @State private var inlineeFeedback: (message: String, isPositive: Bool)? = nil
 
     var deck: Deck?
     var decks: [Deck]?
@@ -47,10 +49,6 @@ struct FlashcardView: View {
     @State private var sessionStartTime: Date = Date()
     @State private var currentSession: StudySession?
 
-    // Swipe feedback toast
-    @State private var showSwipeFeedback: Bool = false
-    @State private var swipeFeedbackMessage: String = ""
-    @State private var swipeFeedbackIsPositive: Bool = true
 
     // Post-session navigation
     @State private var showFeynmanMode: Bool = false
@@ -81,85 +79,115 @@ struct FlashcardView: View {
                 // Card Stack
                 if let word = viewModel.currentWord {
                     VStack(spacing: AppTheme.Spacing.lg) {
-                        flashcard(word: word)
-                            .offset(cardOffset)
-                            .rotationEffect(.degrees(cardRotation))
-                            .gesture(dragGesture)
-                            .opacity(appearAnimation ? 1 : 0)
-                            .scaleEffect(appearAnimation ? 1 : 0.9)
+                        ZStack {
+                            flashcard(word: word)
+                                .offset(cardOffset)
+                                .rotationEffect(.degrees(cardRotation))
+                                .gesture(dragGesture)
+                                .opacity(appearAnimation ? 1 : 0)
+                                .scaleEffect(appearAnimation ? 1 : 0.9)
 
-                        // Know It / Don't Know buttons - always visible
-                        HStack(spacing: AppTheme.Spacing.lg) {
-                            // Don't Know button (red)
-                            Button {
-                                if !isFlipped {
-                                    // Flip to reveal, then process as don't know
-                                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                        isFlipped = true
+                            // Inline feedback overlay on card
+                            if let feedback = inlineeFeedback {
+                                VStack {
+                                    Spacer()
+                                    HStack(spacing: AppTheme.Spacing.sm) {
+                                        Image(systemName: feedback.isPositive ? "checkmark.circle.fill" : "arrow.clockwise.circle.fill")
+                                            .font(.system(size: 24, weight: .bold))
+                                        Text(feedback.message)
+                                            .font(AppTheme.Typography.headlineSmall(.bold))
                                     }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, AppTheme.Spacing.xl)
+                                    .padding(.vertical, AppTheme.Spacing.lg)
+                                    .background(
+                                        Capsule()
+                                            .fill(feedback.isPositive ? AppTheme.Colors.success : AppTheme.Colors.warning)
+                                    )
+                                    .shadow(color: (feedback.isPositive ? AppTheme.Colors.success : AppTheme.Colors.warning).opacity(0.5), radius: 20, x: 0, y: 10)
+                                    .transition(.scale.combined(with: .opacity))
+                                    Spacer()
+                                }
+                                .frame(width: UIScreen.main.bounds.width - 64, height: 400)
+                            }
+                        }
+
+                        // Know It / Don't Know buttons - hide during drag for cleaner UX
+                        if !isDragging {
+                            HStack(spacing: AppTheme.Spacing.lg) {
+                                // Don't Know button (red)
+                                Button {
+                                    if !isFlipped {
+                                        // Flip to reveal, then process as don't know
+                                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                            isFlipped = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            swipeCard(direction: .left)
+                                        }
+                                    } else {
                                         swipeCard(direction: .left)
                                     }
-                                } else {
-                                    swipeCard(direction: .left)
-                                }
-                            } label: {
-                                VStack(spacing: AppTheme.Spacing.xs) {
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 28, weight: .bold))
-                                    Text("Don't Know")
-                                        .font(AppTheme.Typography.labelMedium(.semibold))
-                                }
-                                .foregroundColor(AppTheme.Colors.error)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, AppTheme.Spacing.lg)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                                        .fill(AppTheme.Colors.error.opacity(0.15))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                                                .stroke(AppTheme.Colors.error.opacity(0.3), lineWidth: 1)
-                                        )
-                                )
-                            }
-                            .accessibilityLabel("Don't know this word")
-
-                            // Know It button (green)
-                            Button {
-                                if !isFlipped {
-                                    // Flip to reveal, then process as know
-                                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                        isFlipped = true
+                                } label: {
+                                    VStack(spacing: AppTheme.Spacing.xs) {
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 28, weight: .bold))
+                                        Text("Don't Know")
+                                            .font(AppTheme.Typography.labelMedium(.semibold))
                                     }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    .foregroundColor(AppTheme.Colors.error)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, AppTheme.Spacing.lg)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                                            .fill(AppTheme.Colors.error.opacity(0.15))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                                                    .stroke(AppTheme.Colors.error.opacity(0.3), lineWidth: 1)
+                                            )
+                                    )
+                                }
+                                .accessibilityLabel("Don't know this word")
+
+                                // Know It button (green)
+                                Button {
+                                    if !isFlipped {
+                                        // Flip to reveal, then process as know
+                                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                            isFlipped = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            swipeCard(direction: .right)
+                                        }
+                                    } else {
                                         swipeCard(direction: .right)
                                     }
-                                } else {
-                                    swipeCard(direction: .right)
+                                } label: {
+                                    VStack(spacing: AppTheme.Spacing.xs) {
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 28, weight: .bold))
+                                        Text("Know It")
+                                            .font(AppTheme.Typography.labelMedium(.semibold))
+                                    }
+                                    .foregroundColor(AppTheme.Colors.success)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, AppTheme.Spacing.lg)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                                            .fill(AppTheme.Colors.success.opacity(0.15))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                                                    .stroke(AppTheme.Colors.success.opacity(0.3), lineWidth: 1)
+                                            )
+                                    )
                                 }
-                            } label: {
-                                VStack(spacing: AppTheme.Spacing.xs) {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 28, weight: .bold))
-                                    Text("Know It")
-                                        .font(AppTheme.Typography.labelMedium(.semibold))
-                                }
-                                .foregroundColor(AppTheme.Colors.success)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, AppTheme.Spacing.lg)
-                                .background(
-                                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                                        .fill(AppTheme.Colors.success.opacity(0.15))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                                                .stroke(AppTheme.Colors.success.opacity(0.3), lineWidth: 1)
-                                        )
-                                )
+                                .accessibilityLabel("Know this word")
                             }
-                            .accessibilityLabel("Know this word")
+                            .padding(.horizontal, AppTheme.Spacing.lg)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
-                        .padding(.horizontal, AppTheme.Spacing.lg)
                     }
+                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isDragging)
                 } else if viewModel.isSessionComplete {
                     SessionCompleteView(
                         correct: viewModel.sessionCorrect,
@@ -195,20 +223,6 @@ struct FlashcardView: View {
                 Spacer()
             }
 
-            // Swipe feedback toast
-            if showSwipeFeedback {
-                VStack {
-                    Spacer()
-
-                    SwipeFeedbackToast(
-                        message: swipeFeedbackMessage,
-                        isPositive: swipeFeedbackIsPositive
-                    )
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.bottom, 100)
-                }
-                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showSwipeFeedback)
-            }
         }
         .preferredColorScheme(.dark)
         .fullScreenCover(isPresented: $showFeynmanMode) {
@@ -541,6 +555,11 @@ struct FlashcardView: View {
                 cardOffset = value.translation
                 cardRotation = Double(value.translation.width / 20)
 
+                // Track dragging state to hide buttons
+                if !isDragging && abs(value.translation.width) > 10 {
+                    isDragging = true
+                }
+
                 // Update hint
                 if value.translation.width > 50 {
                     showHint = .right
@@ -566,6 +585,7 @@ struct FlashcardView: View {
                         cardOffset = .zero
                         cardRotation = 0
                         showHint = nil
+                        isDragging = false
                     }
                 }
             }
@@ -605,6 +625,8 @@ struct FlashcardView: View {
         cardOffset = .zero
         cardRotation = 0
         showHint = nil
+        isDragging = false
+        inlineeFeedback = nil
 
         // Auto-play pronunciation for next word if enabled
         if autoPlayPronunciation, let word = viewModel.currentWord {
@@ -628,51 +650,52 @@ struct FlashcardView: View {
             HapticManager.shared.cardSwipeLeft()
         }
 
-        withAnimation(.easeOut(duration: 0.3)) {
-            cardOffset = CGSize(width: targetX, height: 0)
-            cardRotation = direction == .right ? 20 : -20
+        let isCorrect = direction == .right
+        var feedbackMessage: String
+        var feedbackIsPositive: Bool
+
+        // Generate feedback message BEFORE animation
+        if isPreviewMode {
+            feedbackMessage = "Word previewed"
+            feedbackIsPositive = true
+        } else {
+            if isCorrect {
+                let newReps = repetitionsBefore + 1
+                if newReps >= 5 {
+                    feedbackMessage = "Mastered!"
+                    feedbackIsPositive = true
+                } else {
+                    let remaining = 5 - newReps
+                    feedbackMessage = "\(remaining) more to master"
+                    feedbackIsPositive = true
+                }
+            } else {
+                feedbackMessage = "You'll see this again"
+                feedbackIsPositive = false
+            }
+        }
+
+        // Show inline feedback on card BEFORE it animates away
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            inlineeFeedback = (feedbackMessage, feedbackIsPositive)
+        }
+
+        // Animate card away after brief feedback display
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            withAnimation(.easeOut(duration: 0.3)) {
+                cardOffset = CGSize(width: targetX, height: 0)
+                cardRotation = direction == .right ? 20 : -20
+            }
         }
 
         // Process after animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let isCorrect = direction == .right
-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
             // Mark word as previewed if in preview mode
             if isPreviewMode {
                 currentWord?.markPreviewed()
-                swipeFeedbackMessage = "Word previewed - quiz to prove you know it"
-                swipeFeedbackIsPositive = true
             } else {
                 if let progress = userProgress {
                     viewModel.processResponse(knewIt: isCorrect, userProgress: progress)
-                }
-
-                // Generate feedback message
-                if isCorrect {
-                    let newReps = repetitionsBefore + 1
-                    if newReps >= 5 {
-                        swipeFeedbackMessage = "Mastered! Great job!"
-                        swipeFeedbackIsPositive = true
-                    } else {
-                        let remaining = 5 - newReps
-                        swipeFeedbackMessage = "\(remaining) more to master"
-                        swipeFeedbackIsPositive = true
-                    }
-                } else {
-                    swipeFeedbackMessage = "You'll see this again soon"
-                    swipeFeedbackIsPositive = false
-                }
-            }
-
-            // Show feedback toast
-            withAnimation {
-                showSwipeFeedback = true
-            }
-
-            // Hide after delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                withAnimation {
-                    showSwipeFeedback = false
                 }
             }
 

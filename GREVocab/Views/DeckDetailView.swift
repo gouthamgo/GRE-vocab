@@ -5,10 +5,7 @@ struct DeckDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     let deck: Deck
-    @State private var showFlashcards = false
     @State private var showFeynmanMode = false
-    @State private var showActiveRecall = false
-    @State private var showMoreOptions = false
     @State private var searchText = ""
     @State private var selectedStatus: WordStatus? = nil
     @State private var appearAnimation = false
@@ -68,14 +65,8 @@ struct DeckDetailView: View {
                     .foregroundColor(AppTheme.Colors.textPrimary)
             }
         }
-        .fullScreenCover(isPresented: $showFlashcards) {
-            PreviewModeView(deck: deck)
-        }
         .fullScreenCover(isPresented: $showFeynmanMode) {
             FeynmanModeView(deck: deck)
-        }
-        .fullScreenCover(isPresented: $showActiveRecall) {
-            ActiveRecallView(deck: deck)
         }
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1)) {
@@ -152,121 +143,56 @@ struct DeckDetailView: View {
     // MARK: - Action Buttons
     private var actionButtons: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            // Main Study Button - goes directly to Quiz
+            // Feynman Technique - Deep Learning
             Button {
                 HapticManager.shared.mediumImpact()
-                showActiveRecall = true
+                showFeynmanMode = true
             } label: {
                 HStack(spacing: AppTheme.Spacing.md) {
-                    Image(systemName: "questionmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.2))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "lightbulb.fill")
+                            .font(.system(size: 20, weight: .bold))
+                    }
 
-                    Text("Start Quiz")
-                        .font(AppTheme.Typography.headlineMedium(.bold))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Feynman Technique")
+                            .font(AppTheme.Typography.headlineSmall(.bold))
+                        Text("Explain words in your own words to deeply learn")
+                            .font(AppTheme.Typography.labelSmall())
+                            .opacity(0.9)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, AppTheme.Spacing.lg)
+                .padding(AppTheme.Spacing.lg)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.xl)
-                        .fill(deck.difficulty.themeColor)
+                        .fill(
+                            LinearGradient(
+                                colors: [AppTheme.Colors.warning, AppTheme.Colors.warning.opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                 )
-                .shadow(color: deck.difficulty.themeColor.opacity(0.4), radius: 20, x: 0, y: 10)
+                .shadow(color: AppTheme.Colors.warning.opacity(0.3), radius: 15, x: 0, y: 8)
             }
 
-            // Subtitle showing words ready for quiz
-            let quizReadyCount = deck.words.filter { $0.learningStage == .previewed || $0.isDueForQuiz }.count
-            if quizReadyCount > 0 {
-                Text("\(quizReadyCount) words ready to quiz")
-                    .font(AppTheme.Typography.bodyMedium(.medium))
-                    .foregroundColor(deck.difficulty.themeColor)
+            // Info text
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: "info.circle.fill")
+                    .font(.system(size: 12))
+                Text("For daily practice, use the Home tab")
             }
-
-            // More options link
-            Button {
-                showMoreOptions.toggle()
-            } label: {
-                HStack(spacing: AppTheme.Spacing.xs) {
-                    Text("More study options")
-                        .font(AppTheme.Typography.labelMedium(.medium))
-                    Image(systemName: showMoreOptions ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 12, weight: .semibold))
-                }
-                .foregroundColor(AppTheme.Colors.textTertiary)
-            }
-            .padding(.top, AppTheme.Spacing.sm)
-
-            // Hidden options (Preview & Feynman)
-            if showMoreOptions {
-                VStack(spacing: AppTheme.Spacing.sm) {
-                    // Preview Mode
-                    Button {
-                        HapticManager.shared.lightImpact()
-                        showFlashcards = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "eye.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(AppTheme.Colors.accent)
-                                .frame(width: 32)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Preview Words")
-                                    .font(AppTheme.Typography.bodyMedium(.medium))
-                                    .foregroundColor(AppTheme.Colors.textPrimary)
-                                Text("Browse and get familiar with new words")
-                                    .font(AppTheme.Typography.labelSmall())
-                                    .foregroundColor(AppTheme.Colors.textTertiary)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12))
-                                .foregroundColor(AppTheme.Colors.textTertiary)
-                        }
-                        .padding(AppTheme.Spacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                                .fill(AppTheme.Colors.surface)
-                        )
-                    }
-
-                    // Feynman Mode
-                    Button {
-                        HapticManager.shared.lightImpact()
-                        showFeynmanMode = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "lightbulb.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(AppTheme.Colors.warning)
-                                .frame(width: 32)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Deep Practice")
-                                    .font(AppTheme.Typography.bodyMedium(.medium))
-                                    .foregroundColor(AppTheme.Colors.textPrimary)
-                                Text("Master words with Feynman technique")
-                                    .font(AppTheme.Typography.labelSmall())
-                                    .foregroundColor(AppTheme.Colors.textTertiary)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12))
-                                .foregroundColor(AppTheme.Colors.textTertiary)
-                        }
-                        .padding(AppTheme.Spacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                                .fill(AppTheme.Colors.surface)
-                        )
-                    }
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
+            .font(AppTheme.Typography.labelSmall())
+            .foregroundColor(AppTheme.Colors.textTertiary)
         }
         .opacity(appearAnimation ? 1 : 0)
         .offset(y: appearAnimation ? 0 : 10)
@@ -431,7 +357,7 @@ struct StatusFilterPill: View {
 
 #Preview {
     NavigationStack {
-        DeckDetailView(deck: Deck(name: "Common", difficulty: .common))
+        DeckDetailView(deck: Deck(name: "Common", difficulty: .medium))
     }
     .modelContainer(for: [Word.self, Deck.self, UserProgress.self], inMemory: true)
 }

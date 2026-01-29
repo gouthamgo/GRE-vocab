@@ -18,6 +18,140 @@ import SwiftUI
 
 // MARK: - Reusable Components
 
+// MARK: - Section Header (Consistent typography for section titles)
+struct SectionHeader: View {
+    let title: String
+    var subtitle: String? = nil
+    var action: (() -> Void)? = nil
+    var actionLabel: String = "See All"
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title.uppercased())
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
+                    .tracking(1.5)
+
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(AppTheme.Typography.labelSmall())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                }
+            }
+
+            Spacer()
+
+            if let action = action {
+                Button(action: action) {
+                    Text(actionLabel)
+                        .font(AppTheme.Typography.labelMedium(.medium))
+                        .foregroundColor(AppTheme.Colors.accent)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Skeleton Loader (Loading state for cards)
+struct SkeletonLoader: View {
+    @State private var isAnimating = false
+
+    var body: some View {
+        GeometryReader { geo in
+            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            AppTheme.Colors.surfaceHighlight.opacity(0.3),
+                            AppTheme.Colors.surfaceHighlight.opacity(0.6),
+                            AppTheme.Colors.surfaceHighlight.opacity(0.3)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .mask(
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [.clear, .white, .clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? geo.size.width : -geo.size.width)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                        .fill(AppTheme.Colors.surfaceHighlight.opacity(0.3))
+                )
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// MARK: - Skeleton Deck Card
+struct SkeletonDeckCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            // Header skeleton
+            HStack {
+                SkeletonLoader()
+                    .frame(width: 80, height: 24)
+                Spacer()
+                SkeletonLoader()
+                    .frame(width: 40, height: 24)
+            }
+
+            // Title skeleton
+            SkeletonLoader()
+                .frame(height: 28)
+
+            // Stats row skeleton
+            HStack(spacing: AppTheme.Spacing.lg) {
+                SkeletonLoader()
+                    .frame(width: 60, height: 20)
+                SkeletonLoader()
+                    .frame(width: 80, height: 20)
+            }
+
+            // Progress bar skeleton
+            SkeletonLoader()
+                .frame(height: 6)
+        }
+        .padding(AppTheme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                .fill(AppTheme.Colors.surface)
+        )
+    }
+}
+
+// MARK: - Skeleton Stat Card
+struct SkeletonStatCard: View {
+    var body: some View {
+        VStack(spacing: AppTheme.Spacing.sm) {
+            SkeletonLoader()
+                .frame(width: 32, height: 32)
+            SkeletonLoader()
+                .frame(width: 60, height: 32)
+            SkeletonLoader()
+                .frame(width: 80, height: 16)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppTheme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                .fill(AppTheme.Colors.surface)
+        )
+    }
+}
+
 // MARK: - Stat Card
 struct StatCard: View {
     let title: String
@@ -34,8 +168,8 @@ struct StatCard: View {
                     .foregroundColor(color)
 
                 Text(title.uppercased())
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1.5)
             }
 
@@ -129,93 +263,135 @@ struct ProgressRing: View {
 // MARK: - Deck Card
 struct DeckCard: View {
     let deck: Deck
+    var isLocked: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            // Header
-            HStack {
-                // Difficulty badge
-                HStack(spacing: AppTheme.Spacing.xxs) {
-                    Image(systemName: deck.difficulty.icon)
-                        .font(.system(size: 10, weight: .bold))
-                    Text(deck.difficulty.rawValue.uppercased())
-                        .font(AppTheme.Typography.labelSmall(.bold))
-                        .tracking(1)
-                }
-                .foregroundColor(deck.difficulty.themeColor)
-                .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xxs)
-                .background(
-                    Capsule()
-                        .fill(deck.difficulty.themeColor.opacity(0.15))
-                )
+        ZStack {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                // Header
+                HStack {
+                    // Difficulty badge
+                    HStack(spacing: AppTheme.Spacing.xxs) {
+                        Image(systemName: deck.difficulty.icon)
+                            .font(.system(size: 10, weight: .bold))
+                        Text(deck.difficulty.rawValue.uppercased())
+                            .font(AppTheme.Typography.labelSmall(.bold))
+                            .tracking(1)
+                    }
+                    .foregroundColor(deck.difficulty.themeColor)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xxs)
+                    .background(
+                        Capsule()
+                            .fill(deck.difficulty.themeColor.opacity(0.15))
+                    )
 
-                Spacer()
+                    Spacer()
 
-                // Review count
-                if deck.dueForReviewCount > 0 {
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(AppTheme.Colors.accent)
-                            .frame(width: 8, height: 8)
-                        Text("\(deck.dueForReviewCount)")
-                            .font(AppTheme.Typography.labelMedium(.bold))
-                            .foregroundColor(AppTheme.Colors.accent)
+                    // Premium badge or Review count
+                    if isLocked {
+                        HStack(spacing: 4) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10, weight: .bold))
+                            Text("PREMIUM")
+                                .font(AppTheme.Typography.labelSmall(.bold))
+                                .tracking(0.5)
+                        }
+                        .foregroundColor(AppTheme.Colors.warning)
+                        .padding(.horizontal, AppTheme.Spacing.sm)
+                        .padding(.vertical, AppTheme.Spacing.xxs)
+                        .background(
+                            Capsule()
+                                .fill(AppTheme.Colors.warning.opacity(0.15))
+                        )
+                    } else if deck.dueForReviewCount > 0 {
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(AppTheme.Colors.accent)
+                                .frame(width: 8, height: 8)
+                            Text("\(deck.dueForReviewCount)")
+                                .font(AppTheme.Typography.labelMedium(.bold))
+                                .foregroundColor(AppTheme.Colors.accent)
+                        }
                     }
                 }
-            }
 
-            // Deck name
-            Text(deck.name)
-                .font(AppTheme.Typography.headlineMedium(.bold))
-                .foregroundColor(AppTheme.Colors.textPrimary)
-                .lineLimit(1)
+                // Deck name
+                Text(deck.name)
+                    .font(AppTheme.Typography.headlineMedium(.bold))
+                    .foregroundColor(isLocked ? AppTheme.Colors.textSecondary : AppTheme.Colors.textPrimary)
+                    .lineLimit(1)
 
-            // Stats row
-            HStack(spacing: AppTheme.Spacing.lg) {
-                Label("\(deck.totalWords)", systemImage: "rectangle.stack.fill")
-                    .font(AppTheme.Typography.bodySmall(.medium))
-                    .foregroundColor(AppTheme.Colors.textSecondary)
+                // Stats row
+                HStack(spacing: AppTheme.Spacing.lg) {
+                    Label("\(deck.totalWords)", systemImage: "rectangle.stack.fill")
+                        .font(AppTheme.Typography.bodySmall(.medium))
+                        .foregroundColor(AppTheme.Colors.textSecondary)
 
-                Label("\(deck.masteredCount)", systemImage: "checkmark.circle.fill")
-                    .font(AppTheme.Typography.bodySmall(.medium))
-                    .foregroundColor(AppTheme.Colors.success.opacity(0.8))
-            }
-
-            // Progress bar
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(AppTheme.Colors.surfaceHighlight)
-                        .frame(height: 6)
-
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(
-                            LinearGradient(
-                                colors: [deck.difficulty.themeColor, deck.difficulty.themeColor.opacity(0.6)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: geo.size.width * deck.progress, height: 6)
+                    if isLocked {
+                        Label("Unlock to study", systemImage: "sparkles")
+                            .font(AppTheme.Typography.bodySmall(.medium))
+                            .foregroundColor(AppTheme.Colors.warning.opacity(0.8))
+                    } else {
+                        Label("\(deck.masteredCount)", systemImage: "checkmark.circle.fill")
+                            .font(AppTheme.Typography.bodySmall(.medium))
+                            .foregroundColor(AppTheme.Colors.success.opacity(0.8))
+                    }
                 }
+
+                // Progress bar
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AppTheme.Colors.surfaceHighlight)
+                            .frame(height: 6)
+
+                        if !isLocked {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [deck.difficulty.themeColor, deck.difficulty.themeColor.opacity(0.6)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: geo.size.width * deck.progress, height: 6)
+                        }
+                    }
+                }
+                .frame(height: 6)
+                .accessibilityHidden(true)
             }
-            .frame(height: 6)
-            .accessibilityHidden(true)
+            .padding(AppTheme.Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                    .fill(AppTheme.Colors.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                            .stroke(isLocked ? AppTheme.Colors.warning.opacity(0.3) : AppTheme.Colors.surfaceHighlight, lineWidth: 1)
+                    )
+            )
+
+            // Locked overlay shimmer effect
+            if isLocked {
+                RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                AppTheme.Colors.warning.opacity(0.03),
+                                AppTheme.Colors.warning.opacity(0.08),
+                                AppTheme.Colors.warning.opacity(0.03)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
         }
-        .padding(AppTheme.Spacing.lg)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                .fill(AppTheme.Colors.surface)
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                        .stroke(AppTheme.Colors.surfaceHighlight, lineWidth: 1)
-                )
-        )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(deck.name) deck, \(deck.difficulty.rawValue) difficulty")
-        .accessibilityValue("\(deck.totalWords) words, \(deck.masteredCount) mastered, \(Int(deck.progress * 100)) percent complete")
-        .accessibilityHint(deck.dueForReviewCount > 0 ? "\(deck.dueForReviewCount) cards due for review" : "All cards reviewed")
+        .accessibilityLabel("\(deck.name) deck, \(deck.difficulty.rawValue) difficulty\(isLocked ? ", locked" : "")")
+        .accessibilityValue(isLocked ? "Premium content, \(deck.totalWords) words" : "\(deck.totalWords) words, \(deck.masteredCount) mastered, \(Int(deck.progress * 100)) percent complete")
+        .accessibilityHint(isLocked ? "Tap to unlock with premium" : (deck.dueForReviewCount > 0 ? "\(deck.dueForReviewCount) cards due for review" : "All cards reviewed"))
     }
 }
 
@@ -459,6 +635,84 @@ struct FloatingActionButton: View {
     }
 }
 
+// MARK: - Progress Bar Legend
+struct ProgressBarLegend: View {
+    let items: [(color: Color, label: String)]
+
+    var body: some View {
+        HStack(spacing: AppTheme.Spacing.md) {
+            ForEach(items.indices, id: \.self) { index in
+                HStack(spacing: AppTheme.Spacing.xxs) {
+                    Circle()
+                        .fill(items[index].color)
+                        .frame(width: 8, height: 8)
+                    Text(items[index].label)
+                        .font(AppTheme.Typography.labelSmall())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Tappable Progress Bar
+struct TappableProgressBar: View {
+    let segments: [(value: Double, color: Color, label: String)]
+    let total: Double
+    @State private var showLegend = false
+
+    var body: some View {
+        VStack(spacing: AppTheme.Spacing.xs) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(AppTheme.Colors.surfaceHighlight)
+                        .frame(height: 10)
+
+                    HStack(spacing: 0) {
+                        ForEach(segments.indices, id: \.self) { index in
+                            if segments[index].value > 0 {
+                                Rectangle()
+                                    .fill(segments[index].color)
+                                    .frame(width: geo.size.width * (segments[index].value / max(total, 1)))
+                            }
+                        }
+                    }
+                    .frame(height: 10)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+            }
+            .frame(height: 10)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(AppTheme.Motion.quick) {
+                    showLegend.toggle()
+                }
+                HapticManager.shared.lightImpact()
+            }
+            .accessibilityLabel("Progress bar, tap to show legend")
+
+            if showLegend {
+                HStack(spacing: AppTheme.Spacing.md) {
+                    ForEach(segments.indices, id: \.self) { index in
+                        if segments[index].value > 0 {
+                            HStack(spacing: AppTheme.Spacing.xxs) {
+                                Circle()
+                                    .fill(segments[index].color)
+                                    .frame(width: 8, height: 8)
+                                Text("\(Int(segments[index].value)) \(segments[index].label)")
+                                    .font(AppTheme.Typography.labelSmall())
+                                    .foregroundColor(AppTheme.Colors.textTertiary)
+                            }
+                        }
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+}
+
 // MARK: - Empty State
 struct EmptyStateView: View {
     let icon: String
@@ -466,30 +720,40 @@ struct EmptyStateView: View {
     let subtitle: String
     var action: (() -> Void)? = nil
     var actionTitle: String = "Get Started"
+    var actionIcon: String = "arrow.right"
+    var iconColor: Color? = nil
 
     var body: some View {
         VStack(spacing: AppTheme.Spacing.lg) {
-            Image(systemName: icon)
-                .font(.system(size: 64, weight: .light))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+            ZStack {
+                Circle()
+                    .fill((iconColor ?? AppTheme.Colors.textTertiary).opacity(0.1))
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: icon)
+                    .font(.system(size: 44, weight: .medium))
+                    .foregroundColor(iconColor ?? AppTheme.Colors.textTertiary)
+            }
 
             VStack(spacing: AppTheme.Spacing.sm) {
                 Text(title)
-                    .font(AppTheme.Typography.headlineLarge(.bold))
+                    .font(AppTheme.Typography.headlineMedium(.bold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Text(subtitle)
                     .font(AppTheme.Typography.bodyMedium())
                     .foregroundColor(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             if let action = action {
-                PrimaryButton(actionTitle, icon: "arrow.right", action: action)
-                    .frame(maxWidth: 200)
+                PrimaryButton(actionTitle, icon: actionIcon, action: action)
+                    .frame(maxWidth: 220)
                     .padding(.top, AppTheme.Spacing.md)
             }
         }
-        .padding(AppTheme.Spacing.xxl)
+        .padding(AppTheme.Spacing.xl)
+        .frame(maxWidth: .infinity)
     }
 }

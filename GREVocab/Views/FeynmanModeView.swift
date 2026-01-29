@@ -338,8 +338,17 @@ struct FeynmanModeView: View {
                                     .stroke(AppTheme.Colors.surfaceHighlight, lineWidth: 1)
                             )
                     )
+                    .onChange(of: userExplanation) { _, newValue in
+                        if newValue.count > 1000 { userExplanation = String(newValue.prefix(1000)) }
+                    }
 
-                Text("Explain the word as if teaching a child. Use simple language!")
+                HStack {
+                    Text("Explain the word as if teaching a child. Use simple language!")
+                    Spacer()
+                    Text("\(userExplanation.count)/\(1000)")
+                        .font(AppTheme.Typography.labelSmall())
+                        .foregroundColor(userExplanation.count > 1000 - 100 ? AppTheme.Colors.warning : AppTheme.Colors.textTertiary)
+                }
                     .font(AppTheme.Typography.labelSmall())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
@@ -392,8 +401,17 @@ struct FeynmanModeView: View {
                                     .stroke(AppTheme.Colors.surfaceHighlight, lineWidth: 1)
                             )
                     )
+                    .onChange(of: userExample) { _, newValue in
+                        if newValue.count > 500 { userExample = String(newValue.prefix(500)) }
+                    }
 
-                Text("Create a sentence using '\(word.term)' that shows you understand its meaning.")
+                HStack {
+                    Text("Create a sentence using '\(word.term)' that shows you understand its meaning.")
+                    Spacer()
+                    Text("\(userExample.count)/\(500)")
+                        .font(AppTheme.Typography.labelSmall())
+                        .foregroundColor(userExample.count > 500 - 50 ? AppTheme.Colors.warning : AppTheme.Colors.textTertiary)
+                }
                     .font(AppTheme.Typography.labelSmall())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
@@ -887,6 +905,6 @@ struct FlowLayout: Layout {
 }
 
 #Preview {
-    FeynmanModeView(deck: Deck(name: "Test", difficulty: .common))
+    FeynmanModeView(deck: Deck(name: "Test", difficulty: .medium))
         .modelContainer(for: [Word.self, Deck.self, UserProgress.self, StudySession.self], inMemory: true)
 }

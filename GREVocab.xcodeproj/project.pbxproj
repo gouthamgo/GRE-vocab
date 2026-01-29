@@ -58,6 +58,11 @@
 		PR3V13WST3PV13W001 /* PreviewStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PR3V13WST3PV13W002 /* PreviewStepView.swift */; };
 		QU1ZST3PV13W5W1FT001 /* QuizStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = QU1ZST3PV13W5W1FT002 /* QuizStepView.swift */; };
 		D33PM0M3NTV13W001 /* DeepMomentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33PM0M3NTV13W002 /* DeepMomentView.swift */; };
+		SC0R3PR3D1CT0R001 /* ScorePredictorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SC0R3PR3D1CT0R002 /* ScorePredictorService.swift */; };
+		N0T1F1CAT10N5VC001 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = N0T1F1CAT10N5VC002 /* NotificationService.swift */; };
+		PAYW4LLV13W5W1FT001 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PAYW4LLV13W5W1FT002 /* PaywallView.swift */; };
+		M0D3LC0NT3XT3XT001 /* ModelContextExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = M0D3LC0NT3XT3XT002 /* ModelContextExtensions.swift */; };
+		K3YCH41N5VC5W1FT001 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = K3YCH41N5VC5W1FT002 /* KeychainService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -114,6 +119,11 @@
 		PR3V13WST3PV13W002 /* PreviewStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStepView.swift; sourceTree = "<group>"; };
 		QU1ZST3PV13W5W1FT002 /* QuizStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizStepView.swift; sourceTree = "<group>"; };
 		D33PM0M3NTV13W002 /* DeepMomentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepMomentView.swift; sourceTree = "<group>"; };
+		SC0R3PR3D1CT0R002 /* ScorePredictorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorePredictorService.swift; sourceTree = "<group>"; };
+		N0T1F1CAT10N5VC002 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		PAYW4LLV13W5W1FT002 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		M0D3LC0NT3XT3XT002 /* ModelContextExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContextExtensions.swift; sourceTree = "<group>"; };
+		K3YCH41N5VC5W1FT002 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -159,6 +169,10 @@
 				5AC89FB90B2F6A1EF285CF70 /* SpacedRepetitionServiceProtocol.swift */,
 				8EC2FDA73DD38A86CB539876 /* TextToSpeechServiceProtocol.swift */,
 				8FA60816D60E4B3DAE7D1863 /* LearningPathService.swift */,
+				SC0R3PR3D1CT0R002 /* ScorePredictorService.swift */,
+				N0T1F1CAT10N5VC002 /* NotificationService.swift */,
+				M0D3LC0NT3XT3XT002 /* ModelContextExtensions.swift */,
+				K3YCH41N5VC5W1FT002 /* KeychainService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -258,6 +272,7 @@
 				24AA399742660CBC61DBF17E /* SessionCompleteView.swift */,
 				B2C3D4E5F6A7B8C9D0E1F2A3 /* SettingsView.swift */,
 				5200047117C937E11C72C638 /* StatsProgressView.swift */,
+				PAYW4LLV13W5W1FT002 /* PaywallView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -393,6 +408,11 @@
 				PR3V13WST3PV13W001 /* PreviewStepView.swift in Sources */,
 				QU1ZST3PV13W5W1FT001 /* QuizStepView.swift in Sources */,
 				D33PM0M3NTV13W001 /* DeepMomentView.swift in Sources */,
+				SC0R3PR3D1CT0R001 /* ScorePredictorService.swift in Sources */,
+				N0T1F1CAT10N5VC001 /* NotificationService.swift in Sources */,
+				PAYW4LLV13W5W1FT001 /* PaywallView.swift in Sources */,
+				M0D3LC0NT3XT3XT001 /* ModelContextExtensions.swift in Sources */,
+				K3YCH41N5VC5W1FT001 /* KeychainService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

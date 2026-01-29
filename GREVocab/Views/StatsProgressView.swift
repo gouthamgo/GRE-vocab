@@ -7,6 +7,7 @@ struct StatsProgressView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var viewModel: ProgressViewModel
     @State private var appearAnimation = false
+    @State private var selectedChartData: ProgressViewModel.DailyActivityData? = nil
 
     var body: some View {
         NavigationStack {
@@ -93,8 +94,8 @@ struct StatsProgressView: View {
     private var timeFilteredStatsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("\(viewModel.selectedTimeframe.rawValue.uppercased()) ACTIVITY")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+                .font(AppTheme.Typography.labelMedium(.bold))
+                .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                 .tracking(1.5)
 
             LazyVGrid(columns: [
@@ -139,8 +140,8 @@ struct StatsProgressView: View {
     private var recentSessionsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("RECENT SESSIONS")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+                .font(AppTheme.Typography.labelMedium(.bold))
+                .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                 .tracking(1.5)
 
             if viewModel.filteredSessions.isEmpty {
@@ -192,8 +193,8 @@ struct StatsProgressView: View {
                 )
 
                 Text("OVERALL MASTERY")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1.5)
             }
             .opacity(appearAnimation ? 1 : 0)
@@ -264,8 +265,8 @@ struct StatsProgressView: View {
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Text("DAY STREAK")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1)
             }
             .frame(maxWidth: .infinity)
@@ -296,8 +297,8 @@ struct StatsProgressView: View {
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
                 Text("BEST STREAK")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1)
             }
             .frame(maxWidth: .infinity)
@@ -320,8 +321,8 @@ struct StatsProgressView: View {
     private var activityChartSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("7-DAY ACTIVITY")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+                .font(AppTheme.Typography.labelMedium(.bold))
+                .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                 .tracking(1.5)
 
             VStack(spacing: AppTheme.Spacing.md) {
@@ -343,13 +344,49 @@ struct StatsProgressView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, AppTheme.Spacing.xl)
                 } else {
-                    // Chart
+                    // Selected data tooltip
+                    if let selected = selectedChartData {
+                        HStack(spacing: AppTheme.Spacing.md) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(selected.dayLabel)
+                                    .font(AppTheme.Typography.labelMedium(.bold))
+                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                Text("\(selected.wordsStudied) words studied")
+                                    .font(AppTheme.Typography.bodySmall())
+                                    .foregroundColor(AppTheme.Colors.accent)
+                            }
+                            Spacer()
+                            Button {
+                                withAnimation(AppTheme.Motion.quick) {
+                                    selectedChartData = nil
+                                }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(AppTheme.Colors.textTertiary)
+                            }
+                        }
+                        .padding(AppTheme.Spacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                                .fill(AppTheme.Colors.surfaceElevated)
+                        )
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    }
+
+                    // Chart with selection
                     Chart(viewModel.weeklyActivityData) { data in
                         BarMark(
                             x: .value("Day", data.dayLabel),
                             y: .value("Words", data.wordsStudied)
                         )
                         .foregroundStyle(
+                            selectedChartData?.dayLabel == data.dayLabel ?
+                            LinearGradient(
+                                colors: [AppTheme.Colors.accent, AppTheme.Colors.accent],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ) :
                             LinearGradient(
                                 colors: [AppTheme.Colors.accent, AppTheme.Colors.accent.opacity(0.6)],
                                 startPoint: .top,
@@ -357,6 +394,7 @@ struct StatsProgressView: View {
                             )
                         )
                         .cornerRadius(6)
+                        .opacity(selectedChartData == nil || selectedChartData?.dayLabel == data.dayLabel ? 1.0 : 0.4)
                     }
                     .chartYAxis {
                         AxisMarks(position: .leading) { _ in
@@ -372,7 +410,54 @@ struct StatsProgressView: View {
                                 .foregroundStyle(AppTheme.Colors.textTertiary)
                         }
                     }
+                    .chartOverlay { proxy in
+                        GeometryReader { geo in
+                            Rectangle()
+                                .fill(.clear)
+                                .contentShape(Rectangle())
+                                .gesture(
+                                    SpatialTapGesture()
+                                        .onEnded { value in
+                                            let xPosition = value.location.x - geo[proxy.plotFrame!].origin.x
+                                            if let dayLabel: String = proxy.value(atX: xPosition) {
+                                                if let tapped = viewModel.weeklyActivityData.first(where: { $0.dayLabel == dayLabel }) {
+                                                    withAnimation(AppTheme.Motion.quick) {
+                                                        if selectedChartData?.dayLabel == dayLabel {
+                                                            selectedChartData = nil
+                                                        } else {
+                                                            selectedChartData = tapped
+                                                        }
+                                                    }
+                                                    HapticManager.shared.selection()
+                                                }
+                                            }
+                                        }
+                                )
+                        }
+                    }
                     .frame(height: 180)
+                    .padding(.top, AppTheme.Spacing.sm)
+
+                    // Weekly summary prominently displayed
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("This Week")
+                                .font(AppTheme.Typography.labelMedium(.medium))
+                                .foregroundColor(AppTheme.Colors.textSecondary)
+                            Text("\(viewModel.weeklyActivityData.reduce(0) { $0 + $1.wordsStudied }) words")
+                                .font(AppTheme.Typography.headlineMedium(.bold))
+                                .foregroundColor(AppTheme.Colors.textPrimary)
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Daily Avg")
+                                .font(AppTheme.Typography.labelMedium(.medium))
+                                .foregroundColor(AppTheme.Colors.textSecondary)
+                            Text(String(format: "%.0f", Double(viewModel.weeklyActivityData.reduce(0) { $0 + $1.wordsStudied }) / 7.0))
+                                .font(AppTheme.Typography.headlineMedium(.bold))
+                                .foregroundColor(AppTheme.Colors.accent)
+                        }
+                    }
                     .padding(.top, AppTheme.Spacing.sm)
 
                     // Summary stats below chart
@@ -421,8 +506,8 @@ struct StatsProgressView: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
                 Text("CHALLENGING WORDS")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1.5)
 
                 Spacer()
@@ -477,8 +562,8 @@ struct StatsProgressView: View {
     private var distributionSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("LEARNING PATH")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+                .font(AppTheme.Typography.labelMedium(.bold))
+                .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                 .tracking(1.5)
 
             VStack(spacing: AppTheme.Spacing.lg) {
@@ -624,8 +709,8 @@ struct StatsProgressView: View {
     private var detailedStatsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("STATISTICS")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+                .font(AppTheme.Typography.labelMedium(.bold))
+                .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                 .tracking(1.5)
 
             LazyVGrid(columns: [

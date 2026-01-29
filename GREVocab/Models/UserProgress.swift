@@ -33,6 +33,25 @@ class UserProgress {
     // Daily session tracking
     var dailySessionCompletedDate: Date?
 
+    // MARK: - NEW: GRE Test & Score Tracking
+    var greTestDate: Date?
+    var estimatedVerbalScore: Int
+    var previousEstimatedScore: Int
+
+    // MARK: - NEW: Notification Settings
+    var notificationsEnabled: Bool
+    var preferredNotificationHour: Int  // 0-23
+    var preferredNotificationMinute: Int  // 0-59
+
+    // MARK: - NEW: Onboarding & Monetization
+    var placementScore: Int  // 0-5 from placement quiz
+    var appInstallDate: Date?
+    var isPremium: Bool
+    var premiumExpiryDate: Date?
+    var totalWordsAtLastPaywallShow: Int
+    var lastPaywallShowDate: Date?
+    var hasCompletedEnhancedOnboarding: Bool
+
     init() {
         self.currentStreak = 0
         self.longestStreak = 0
@@ -52,6 +71,21 @@ class UserProgress {
         self.todayStudyTimeSeconds = 0
         self.todayStudyTimeDate = nil
         self.dailySessionCompletedDate = nil
+
+        // NEW: Initialize new fields
+        self.greTestDate = nil
+        self.estimatedVerbalScore = 145  // Starting baseline
+        self.previousEstimatedScore = 145
+        self.notificationsEnabled = false
+        self.preferredNotificationHour = 9  // Default 9 AM
+        self.preferredNotificationMinute = 0
+        self.placementScore = 0
+        self.appInstallDate = Date()
+        self.isPremium = false
+        self.premiumExpiryDate = nil
+        self.totalWordsAtLastPaywallShow = 0
+        self.lastPaywallShowDate = nil
+        self.hasCompletedEnhancedOnboarding = false
     }
 
     /// Check if today's daily session has been completed
@@ -99,8 +133,8 @@ class UserProgress {
         return (level * (level + 1) / 2) * 100
     }
 
-    func recordStudy(correct: Bool) {
-        // Update streak
+    /// Update streak only (call this when recording study elsewhere)
+    func updateStreak() {
         if let lastDate = lastStudyDate {
             if !Calendar.current.isDateInToday(lastDate) {
                 if Calendar.current.isDateInYesterday(lastDate) {
@@ -118,6 +152,11 @@ class UserProgress {
         }
 
         lastStudyDate = Date()
+    }
+
+    func recordStudy(correct: Bool) {
+        // Update streak
+        updateStreak()
         totalWordsStudied += 1
 
         // Update today's count
@@ -191,5 +230,127 @@ class UserProgress {
         }
         let minutes = todayStudyTimeSeconds / 60
         return "\(minutes)m"
+    }
+
+    // MARK: - GRE Test Date Computed Properties
+
+    /// Days remaining until GRE test
+    var daysUntilGRE: Int? {
+        guard let testDate = greTestDate else { return nil }
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: testDate).day
+        return max(0, days ?? 0)
+    }
+
+    /// Formatted string for days until GRE
+    var daysUntilGREFormatted: String {
+        guard let days = daysUntilGRE else { return "No date set" }
+        if days == 0 { return "Today!" }
+        if days == 1 { return "Tomorrow!" }
+        return "\(days) days"
+    }
+
+    /// Score change since last update
+    var scoreChange: Int {
+        return estimatedVerbalScore - previousEstimatedScore
+    }
+
+    /// Formatted score change string
+    var scoreChangeFormatted: String {
+        if scoreChange > 0 {
+            return "+\(scoreChange)"
+        } else if scoreChange < 0 {
+            return "\(scoreChange)"
+        }
+        return "—"
+    }
+
+    /// Update estimated score and track previous
+    func updateEstimatedScore(_ newScore: Int) {
+        previousEstimatedScore = estimatedVerbalScore
+        estimatedVerbalScore = min(170, max(130, newScore))
+    }
+
+    /// Preferred notification time as Date components
+    var preferredNotificationTime: DateComponents {
+        var components = DateComponents()
+        components.hour = preferredNotificationHour
+        components.minute = preferredNotificationMinute
+        return components
+    }
+
+    /// Set notification time from Date
+    func setNotificationTime(from date: Date) {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        preferredNotificationHour = components.hour ?? 9
+        preferredNotificationMinute = components.minute ?? 0
+    }
+
+    /// Formatted notification time
+    var formattedNotificationTime: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        var components = DateComponents()
+        components.hour = preferredNotificationHour
+        components.minute = preferredNotificationMinute
+        if let date = Calendar.current.date(from: components) {
+            return formatter.string(from: date)
+        }
+        return "9:00 AM"
+    }
+
+    // MARK: - Paywall Logic
+
+    /// Days since app install
+    var daysSinceInstall: Int {
+        guard let installDate = appInstallDate else { return 0 }
+        return Calendar.current.dateComponents([.day], from: installDate, to: Date()).day ?? 0
+    }
+
+    /// Check if paywall should be shown
+    var shouldShowPaywall: Bool {
+        // Don't show if premium
+        if isPremium { return false }
+
+        // Show if Day 3+ and haven't shown today
+        let isDay3Plus = daysSinceInstall >= 3
+
+        // Show if 50+ words learned since last paywall
+        let wordsLearnedSincePaywall = totalWordsStudied - totalWordsAtLastPaywallShow
+        let has50NewWords = wordsLearnedSincePaywall >= 50
+
+        // Don't show more than once per day
+        if let lastShow = lastPaywallShowDate, Calendar.current.isDateInToday(lastShow) {
+            return false
+        }
+
+        return isDay3Plus || has50NewWords
+    }
+
+    /// Record that paywall was shown
+    func recordPaywallShown() {
+        lastPaywallShowDate = Date()
+        totalWordsAtLastPaywallShow = totalWordsStudied
+    }
+
+    /// Check if premium subscription is active
+    var hasPremiumAccess: Bool {
+        guard isPremium else { return false }
+
+        if let expiry = premiumExpiryDate {
+            return expiry > Date()
+        }
+        return true  // Lifetime or no expiry set
+    }
+
+    /// Activate premium subscription
+    func activatePremium(expiryDate: Date? = nil) {
+        isPremium = true
+        premiumExpiryDate = expiryDate
+    }
+
+    /// Deactivate premium subscription
+    func deactivatePremium() {
+        isPremium = false
+        premiumExpiryDate = nil
     }
 }

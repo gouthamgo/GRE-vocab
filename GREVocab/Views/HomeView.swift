@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var showDeepLearnMode = false
     @State private var showAchievements = false
     @State private var appearAnimation = false
+    @State private var showOtherModes = false
 
     // Daily Session (item-based presentation)
     @State private var dailySessionConfig: DailySessionConfig?
@@ -42,23 +43,49 @@ struct HomeView: View {
         LearningPathService.shared.getDailySessionSummary(for: allWords)
     }
 
+    // MARK: - Score Predictor
+    private var estimatedScore: Int {
+        ScorePredictorService.shared.calculateScore(
+            masteredWords: stats.mastered,
+            totalWords: stats.total,
+            accuracy: (progressViewModel.userProgress?.accuracy ?? 70) / 100,
+            avgResponseTime: 8.0,
+            deepLearnedCount: stats.deepLearned
+        )
+    }
+
+    private var greReadiness: Double {
+        ScorePredictorService.shared.calculateReadiness(
+            masteredWords: stats.mastered,
+            totalWords: stats.total,
+            currentScore: estimatedScore,
+            targetScore: 160
+        )
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
+                    // Greeting
+                    greetingSection
+                        .padding(.bottom, AppTheme.Spacing.md)
+
+                    // GRE Countdown Banner (if test date is set)
+                    if progressViewModel.userProgress?.greTestDate != nil {
+                        greCountdownBanner
+                            .padding(.bottom, AppTheme.Spacing.lg)
+                    }
+
                     // Learning Path Visualization
                     learningPathSection
                         .padding(.bottom, AppTheme.Spacing.lg)
 
-                    // Primary Action (Recommended)
+                    // Primary Action (Recommended) - now includes stats
                     recommendedActionSection
                         .padding(.bottom, AppTheme.Spacing.xl)
 
-                    // Today's Stats
-                    todayStatsSection
-                        .padding(.bottom, AppTheme.Spacing.xl)
-
-                    // Other Learning Modes
+                    // Other Learning Modes - collapsible
                     otherModesSection
                         .padding(.bottom, AppTheme.Spacing.lg)
 
@@ -87,6 +114,8 @@ struct HomeView: View {
                             Image(systemName: "magnifyingglass")
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(AppTheme.Colors.textSecondary)
+                                .frame(width: AppTheme.minTapTarget, height: AppTheme.minTapTarget)
+                                .contentShape(Rectangle())
                         }
                         .accessibilityLabel("Search all words")
 
@@ -97,6 +126,8 @@ struct HomeView: View {
                             Image(systemName: "gearshape.fill")
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(AppTheme.Colors.textSecondary)
+                                .frame(width: AppTheme.minTapTarget, height: AppTheme.minTapTarget)
+                                .contentShape(Rectangle())
                         }
                         .accessibilityLabel("Settings")
 
@@ -186,20 +217,92 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Greeting Section
+    private var greetingSection: some View {
+        HStack {
+            Text(greetingText)
+                .font(AppTheme.Typography.headlineSmall(.semibold))
+                .foregroundColor(AppTheme.Colors.textPrimary)
+            Spacer()
+        }
+        .padding(.top, AppTheme.Spacing.md)
+        .opacity(appearAnimation ? 1 : 0)
+    }
+
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12: return "Good morning!"
+        case 12..<17: return "Good afternoon!"
+        case 17..<21: return "Good evening!"
+        default: return "Hello!"
+        }
+    }
+
+    // MARK: - GRE Countdown Banner
+    private var greCountdownBanner: some View {
+        HStack(spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: 4) {
+                if let days = progressViewModel.userProgress?.daysUntilGRE {
+                    HStack(spacing: AppTheme.Spacing.xs) {
+                        Text("\(days)")
+                            .font(AppTheme.Typography.headlineLarge(.bold))
+                            .foregroundColor(AppTheme.Colors.accent)
+                        Text("DAYS TO YOUR GRE")
+                            .font(AppTheme.Typography.labelMedium(.bold))
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                            .tracking(1)
+                    }
+                }
+            }
+
+            Spacer()
+
+            // Readiness indicator
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(Int(greReadiness * 100))%")
+                    .font(AppTheme.Typography.headlineSmall(.bold))
+                    .foregroundColor(readinessColor)
+                Text("ready")
+                    .font(AppTheme.Typography.labelSmall())
+                    .foregroundColor(AppTheme.Colors.textTertiary)
+            }
+        }
+        .padding(AppTheme.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                .fill(AppTheme.Colors.accent.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                        .stroke(AppTheme.Colors.accent.opacity(0.3), lineWidth: 1)
+                )
+        )
+        .opacity(appearAnimation ? 1 : 0)
+        .offset(y: appearAnimation ? 0 : 20)
+    }
+
+    private var readinessColor: Color {
+        switch greReadiness {
+        case 0.7...1.0: return AppTheme.Colors.success
+        case 0.4..<0.7: return AppTheme.Colors.warning
+        default: return AppTheme.Colors.accent
+        }
+    }
+
     // MARK: - Learning Path Section
     private var learningPathSection: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             // Header
             HStack {
                 Text("YOUR LEARNING PATH")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1.5)
 
                 Spacer()
 
                 Text("\(Int(stats.learningPercentage))% progressed")
-                    .font(AppTheme.Typography.labelSmall(.medium))
+                    .font(AppTheme.Typography.labelMedium(.medium))
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
 
@@ -313,28 +416,32 @@ struct HomeView: View {
             ZStack {
                 Circle()
                     .fill(isActive ? color.opacity(0.2) : AppTheme.Colors.surfaceHighlight)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 48, height: 48) // Increased for better tap target
 
                 if isActive {
                     Circle()
                         .stroke(color, lineWidth: 2)
-                        .frame(width: 44, height: 44)
+                        .frame(width: 48, height: 48)
                 }
 
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(isActive ? color : AppTheme.Colors.textTertiary)
             }
+            .contentShape(Circle())
 
             Text(label)
-                .font(AppTheme.Typography.labelSmall(.medium))
+                .font(AppTheme.Typography.labelMedium(.medium))
                 .foregroundColor(isActive ? color : AppTheme.Colors.textTertiary)
 
             Text("\(count)")
-                .font(AppTheme.Typography.labelSmall(.bold))
+                .font(AppTheme.Typography.labelMedium(.bold))
                 .foregroundColor(isActive ? color : AppTheme.Colors.textTertiary)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, minHeight: AppTheme.minTapTarget)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label), \(count) \(countLabel)")
     }
 
     private var pathArrow: some View {
@@ -418,8 +525,8 @@ struct HomeView: View {
             // Optional: Do more section
             VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                 Text("WANT TO DO MORE?")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .font(AppTheme.Typography.labelMedium(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiaryAccessible)
                     .tracking(1.5)
                     .padding(.top, AppTheme.Spacing.sm)
 
@@ -449,7 +556,7 @@ struct HomeView: View {
 
     // MARK: - Start Session Button
     private var startSessionButton: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.md) {
             Button {
                 HapticManager.shared.mediumImpact()
                 startDailySession()
@@ -499,6 +606,50 @@ struct HomeView: View {
                             )
                         }
                     }
+
+                    // Integrated stats row (moved from separate section)
+                    Divider()
+                        .background(Color.white.opacity(0.2))
+
+                    HStack(spacing: AppTheme.Spacing.md) {
+                        // Estimated Score
+                        VStack(spacing: 2) {
+                            Text("\(estimatedScore)")
+                                .font(AppTheme.Typography.headlineSmall(.bold))
+                            Text("Est. Score")
+                                .font(AppTheme.Typography.labelSmall())
+                                .opacity(0.8)
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Rectangle()
+                            .fill(Color.white.opacity(0.2))
+                            .frame(width: 1, height: 36)
+
+                        // Accuracy
+                        VStack(spacing: 2) {
+                            Text("\(Int(progressViewModel.userProgress?.accuracy ?? 0))%")
+                                .font(AppTheme.Typography.headlineSmall(.bold))
+                            Text("Accuracy")
+                                .font(AppTheme.Typography.labelSmall())
+                                .opacity(0.8)
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Rectangle()
+                            .fill(Color.white.opacity(0.2))
+                            .frame(width: 1, height: 36)
+
+                        // Mastered
+                        VStack(spacing: 2) {
+                            Text("\(stats.mastered)")
+                                .font(AppTheme.Typography.headlineSmall(.bold))
+                            Text("Mastered")
+                                .font(AppTheme.Typography.labelSmall())
+                                .opacity(0.8)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
                 }
                 .foregroundColor(.white)
                 .padding(AppTheme.Spacing.lg)
@@ -514,14 +665,6 @@ struct HomeView: View {
                 )
                 .shadow(color: AppTheme.Colors.accent.opacity(0.4), radius: 20, x: 0, y: 10)
             }
-
-            HStack(spacing: AppTheme.Spacing.xs) {
-                Image(systemName: "clock.fill")
-                    .foregroundColor(AppTheme.Colors.textTertiary)
-                Text("~5 minutes")
-                    .foregroundColor(AppTheme.Colors.textTertiary)
-            }
-            .font(AppTheme.Typography.labelSmall(.medium))
 
             if stats.struggling > 0 {
                 HStack(spacing: AppTheme.Spacing.xs) {
@@ -588,97 +731,91 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Today's Stats
-    private var todayStatsSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("TODAY")
-                .font(AppTheme.Typography.labelSmall(.bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
-                .tracking(1.5)
 
-            HStack(spacing: AppTheme.Spacing.md) {
-                StatCard(
-                    title: "Quizzed",
-                    value: "\(progressViewModel.userProgress?.todayWordsStudied ?? 0)",
-                    icon: "questionmark.circle.fill",
-                    color: AppTheme.Colors.tertiary,
-                    subtitle: "of \(progressViewModel.userProgress?.dailyGoal ?? 20) goal"
-                )
-
-                StatCard(
-                    title: "Accuracy",
-                    value: "\(Int(progressViewModel.userProgress?.accuracy ?? 0))%",
-                    icon: "target",
-                    color: AppTheme.Colors.secondary
-                )
-            }
-        }
-        .opacity(appearAnimation ? 1 : 0)
-        .offset(y: appearAnimation ? 0 : 20)
-        .animation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.3), value: appearAnimation)
-    }
-
-    // MARK: - Other Modes Section
+    // MARK: - Other Modes Section (Collapsible)
     private var otherModesSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            HStack {
-                Text(progressViewModel.userProgress?.hasDoneSessionToday == true ? "OPTIONAL EXTRAS" : "OTHER WAYS TO LEARN")
-                    .font(AppTheme.Typography.labelSmall(.bold))
-                    .foregroundColor(AppTheme.Colors.textTertiary)
-                    .tracking(1.5)
-
-                if progressViewModel.userProgress?.hasDoneSessionToday == true {
-                    Text("(not required)")
-                        .font(AppTheme.Typography.labelSmall())
-                        .foregroundColor(AppTheme.Colors.textTertiary.opacity(0.6))
+            // Collapsible header
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    showOtherModes.toggle()
                 }
+                HapticManager.shared.lightImpact()
+            } label: {
+                HStack {
+                    Text(progressViewModel.userProgress?.hasDoneSessionToday == true ? "OPTIONAL EXTRAS" : "OTHER WAYS TO LEARN")
+                        .font(AppTheme.Typography.labelMedium(.bold))
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                        .tracking(1.5)
+
+                    if progressViewModel.userProgress?.hasDoneSessionToday == true {
+                        Text("(not required)")
+                            .font(AppTheme.Typography.labelSmall())
+                            .foregroundColor(AppTheme.Colors.textTertiary.opacity(0.6))
+                    }
+
+                    Spacer()
+
+                    Image(systemName: showOtherModes ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                }
+                .padding(AppTheme.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                        .fill(AppTheme.Colors.surface)
+                )
             }
 
-            VStack(spacing: AppTheme.Spacing.sm) {
-                // Preview Mode (if not recommended)
-                if case .preview = recommendation {
-                    // Already recommended, don't show here
-                } else {
-                    ModeButton(
-                        icon: "eye.fill",
-                        title: "Preview New Words",
-                        subtitle: "Quick look at \(stats.unseen) new words",
-                        color: AppTheme.Colors.accent,
-                        isSecondary: true
-                    ) {
-                        showPreviewIntro = true
+            // Expandable content
+            if showOtherModes {
+                VStack(spacing: AppTheme.Spacing.sm) {
+                    // Preview Mode (if not recommended)
+                    if case .preview = recommendation {
+                        // Already recommended, don't show here
+                    } else {
+                        ModeButton(
+                            icon: "eye.fill",
+                            title: "Preview New Words",
+                            subtitle: "Quick look at \(stats.unseen) new words",
+                            color: AppTheme.Colors.accent,
+                            isSecondary: true
+                        ) {
+                            showPreviewIntro = true
+                        }
                     }
-                }
 
-                // Quiz Mode (if not recommended)
-                if case .quiz = recommendation {
-                    // Already recommended, don't show here
-                } else if stats.readyForQuiz > 0 {
-                    ModeButton(
-                        icon: "questionmark.circle.fill",
-                        title: "Quiz Yourself",
-                        subtitle: "\(stats.readyForQuiz) words ready to test",
-                        color: AppTheme.Colors.tertiary,
-                        isSecondary: true
-                    ) {
-                        showQuizIntro = true
+                    // Quiz Mode (if not recommended)
+                    if case .quiz = recommendation {
+                        // Already recommended, don't show here
+                    } else if stats.readyForQuiz > 0 {
+                        ModeButton(
+                            icon: "questionmark.circle.fill",
+                            title: "Quiz Yourself",
+                            subtitle: "\(stats.readyForQuiz) words ready to test",
+                            color: AppTheme.Colors.tertiary,
+                            isSecondary: true
+                        ) {
+                            showQuizIntro = true
+                        }
                     }
-                }
 
-                // Deep Learn Mode (if not recommended)
-                if case .deepLearn = recommendation {
-                    // Already recommended, don't show here
-                } else if stats.needsDeepLearn > 0 {
-                    ModeButton(
-                        icon: "lightbulb.fill",
-                        title: "Deep Practice",
-                        subtitle: "\(stats.needsDeepLearn) words need attention",
-                        color: AppTheme.Colors.warning,
-                        isSecondary: true
-                    ) {
-                        showDeepLearnIntro = true
+                    // Deep Learn Mode (if not recommended)
+                    if case .deepLearn = recommendation {
+                        // Already recommended, don't show here
+                    } else if stats.needsDeepLearn > 0 {
+                        ModeButton(
+                            icon: "lightbulb.fill",
+                            title: "Deep Practice",
+                            subtitle: "\(stats.needsDeepLearn) words need attention",
+                            color: AppTheme.Colors.warning,
+                            isSecondary: true
+                        ) {
+                            showDeepLearnIntro = true
+                        }
                     }
                 }
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .opacity(appearAnimation ? 1 : 0)
@@ -696,10 +833,12 @@ struct HomeView: View {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(AppTheme.Colors.warning)
+                    .symbolEffect(.bounce, value: progressViewModel.userProgress?.currentStreak ?? 0)
 
                 Text("\(progressViewModel.userProgress?.currentStreak ?? 0)")
                     .font(AppTheme.Typography.labelLarge())
                     .foregroundColor(AppTheme.Colors.textPrimary)
+                    .contentTransition(.numericText())
             }
             .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.vertical, AppTheme.Spacing.xs)
@@ -708,7 +847,7 @@ struct HomeView: View {
                     .fill(AppTheme.Colors.warning.opacity(0.15))
             )
         }
-        .accessibilityLabel("View achievements")
+        .accessibilityLabel("View achievements, \(progressViewModel.userProgress?.currentStreak ?? 0) day streak")
     }
 
     // MARK: - Helpers
@@ -751,7 +890,7 @@ struct ModeButton: View {
                         .foregroundColor(AppTheme.Colors.textPrimary)
 
                     Text(subtitle)
-                        .font(AppTheme.Typography.labelSmall())
+                        .font(AppTheme.Typography.labelMedium())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                 }
 
@@ -762,11 +901,15 @@ struct ModeButton: View {
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
             .padding(AppTheme.Spacing.md)
+            .frame(minHeight: AppTheme.minTapTarget)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
                     .fill(AppTheme.Colors.surface)
             )
+            .contentShape(RoundedRectangle(cornerRadius: AppTheme.Radius.lg))
         }
+        .buttonStyle(ScaleButtonStyle())
+        .accessibilityLabel("\(title), \(subtitle)")
     }
 }
 

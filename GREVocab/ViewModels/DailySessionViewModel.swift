@@ -120,7 +120,7 @@ class DailySessionViewModel {
             if word.learningStage == .unseen {
                 word.markPreviewed()
                 stats.wordsPreviewd += 1
-                try? modelContext.save()
+                modelContext.trySave(operation: "mark word previewed")
             }
         }
 
@@ -208,7 +208,7 @@ class DailySessionViewModel {
         // Update word's learning data
         if let word = currentQuizWord {
             word.recordQuizAttempt(passed: recordedAsCorrect)
-            try? modelContext.save()
+            modelContext.trySave(operation: "record quiz attempt")
         }
 
         // Move to next question or phase
@@ -251,7 +251,7 @@ class DailySessionViewModel {
         // Update word if correct
         if let word = config.deepLearnWord, selected.isCorrect {
             word.markDeepLearned(confidence: 4)
-            try? modelContext.save()
+            modelContext.trySave(operation: "mark deep learned")
         }
     }
 

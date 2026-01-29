@@ -16,9 +16,20 @@ struct SessionCompleteView: View {
     // Learning path recommendation
     let recommendation: LearningRecommendation?
 
+    // NEW: Tomorrow preview data
+    let wordsDueTomorrow: Int
+    let newWordsTomorrow: Int
+    let tomorrowTeaserWords: [String]  // Sample word names for teaser
+    let currentStreak: Int
+    let scoreChange: Int  // Positive or negative score change
+    let estimatedScore: Int
+    let notificationTime: String?  // e.g., "9:00 AM"
+    let onShareProgress: (() -> Void)?
+
     @State private var appearAnimation = false
     @State private var confettiTrigger = false
     @State private var showProgressDetails = false
+    @State private var showShareSheet = false
 
     // Convenience initializer for backwards compatibility
     init(
@@ -39,6 +50,15 @@ struct SessionCompleteView: View {
         self.onActiveRecall = nil
         self.onPreviewMode = nil
         self.recommendation = nil
+        // Tomorrow preview defaults
+        self.wordsDueTomorrow = 0
+        self.newWordsTomorrow = 0
+        self.tomorrowTeaserWords = []
+        self.currentStreak = 0
+        self.scoreChange = 0
+        self.estimatedScore = 145
+        self.notificationTime = nil
+        self.onShareProgress = nil
     }
 
     // Full initializer with all session data
@@ -54,7 +74,15 @@ struct SessionCompleteView: View {
         onFeynmanMode: (() -> Void)? = nil,
         onActiveRecall: (() -> Void)? = nil,
         onPreviewMode: (() -> Void)? = nil,
-        recommendation: LearningRecommendation? = nil
+        recommendation: LearningRecommendation? = nil,
+        wordsDueTomorrow: Int = 0,
+        newWordsTomorrow: Int = 0,
+        tomorrowTeaserWords: [String] = [],
+        currentStreak: Int = 0,
+        scoreChange: Int = 0,
+        estimatedScore: Int = 145,
+        notificationTime: String? = nil,
+        onShareProgress: (() -> Void)? = nil
     ) {
         self.correct = correct
         self.incorrect = incorrect
@@ -68,6 +96,14 @@ struct SessionCompleteView: View {
         self.onActiveRecall = onActiveRecall
         self.onPreviewMode = onPreviewMode
         self.recommendation = recommendation
+        self.wordsDueTomorrow = wordsDueTomorrow
+        self.newWordsTomorrow = newWordsTomorrow
+        self.tomorrowTeaserWords = tomorrowTeaserWords
+        self.currentStreak = currentStreak
+        self.scoreChange = scoreChange
+        self.estimatedScore = estimatedScore
+        self.notificationTime = notificationTime
+        self.onShareProgress = onShareProgress
     }
 
     var total: Int { correct + incorrect }
@@ -194,6 +230,24 @@ struct SessionCompleteView: View {
                     .animation(.spring(response: 0.6).delay(0.7), value: appearAnimation)
             }
 
+            // Streak celebration & Score change
+            if currentStreak > 0 || scoreChange != 0 {
+                streakAndScoreSection
+                    .padding(.horizontal, AppTheme.Spacing.xl)
+                    .padding(.top, AppTheme.Spacing.lg)
+                    .opacity(appearAnimation ? 1 : 0)
+                    .animation(.spring(response: 0.6).delay(0.75), value: appearAnimation)
+            }
+
+            // Tomorrow Preview
+            if wordsDueTomorrow > 0 || newWordsTomorrow > 0 {
+                tomorrowPreviewSection
+                    .padding(.horizontal, AppTheme.Spacing.xl)
+                    .padding(.top, AppTheme.Spacing.lg)
+                    .opacity(appearAnimation ? 1 : 0)
+                    .animation(.spring(response: 0.6).delay(0.8), value: appearAnimation)
+            }
+
             Spacer()
 
             // Buttons
@@ -202,15 +256,38 @@ struct SessionCompleteView: View {
                     onRestart()
                 }
 
-                SecondaryButton("Done", icon: "checkmark") {
-                    onDismiss()
+                HStack(spacing: AppTheme.Spacing.md) {
+                    // Share Progress Button
+                    if onShareProgress != nil {
+                        Button {
+                            onShareProgress?()
+                        } label: {
+                            HStack(spacing: AppTheme.Spacing.xs) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 14, weight: .semibold))
+                                Text("Share")
+                                    .font(AppTheme.Typography.bodyMedium(.semibold))
+                            }
+                            .foregroundColor(AppTheme.Colors.accent)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, AppTheme.Spacing.md)
+                            .background(
+                                RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                                    .stroke(AppTheme.Colors.accent, lineWidth: 1.5)
+                            )
+                        }
+                    }
+
+                    SecondaryButton("Done", icon: "checkmark") {
+                        onDismiss()
+                    }
                 }
             }
             .padding(.horizontal, AppTheme.Spacing.xl)
             .padding(.bottom, AppTheme.Spacing.xxl)
             .opacity(appearAnimation ? 1 : 0)
             .offset(y: appearAnimation ? 0 : 30)
-            .animation(.spring(response: 0.6).delay(0.8), value: appearAnimation)
+            .animation(.spring(response: 0.6).delay(0.85), value: appearAnimation)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppTheme.Colors.background)
@@ -397,6 +474,172 @@ extension SessionCompleteView {
         }
     }
 
+    // MARK: - Streak & Score Section
+    @ViewBuilder
+    var streakAndScoreSection: some View {
+        HStack(spacing: AppTheme.Spacing.md) {
+            // Streak celebration
+            if currentStreak > 0 {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "flame.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(AppTheme.Colors.warning)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(currentStreak) Day Streak!")
+                            .font(AppTheme.Typography.bodyMedium(.bold))
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        if currentStreak >= 7 {
+                            Text("On fire!")
+                                .font(AppTheme.Typography.labelSmall())
+                                .foregroundColor(AppTheme.Colors.warning)
+                        }
+                    }
+                }
+                .padding(AppTheme.Spacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                        .fill(AppTheme.Colors.warning.opacity(0.1))
+                )
+            }
+
+            // Score change indicator
+            if scoreChange != 0 {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: scoreChange > 0 ? "arrow.up.right" : "arrow.down.right")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(scoreChange > 0 ? AppTheme.Colors.success : AppTheme.Colors.error)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Text(scoreChange > 0 ? "+\(scoreChange)" : "\(scoreChange)")
+                                .font(AppTheme.Typography.bodyMedium(.bold))
+                                .foregroundColor(scoreChange > 0 ? AppTheme.Colors.success : AppTheme.Colors.error)
+
+                            Text("pts")
+                                .font(AppTheme.Typography.labelSmall())
+                                .foregroundColor(AppTheme.Colors.textTertiary)
+                        }
+
+                        Text("Est. \(estimatedScore)")
+                            .font(AppTheme.Typography.labelSmall())
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                    }
+                }
+                .padding(AppTheme.Spacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                        .fill(scoreChange > 0 ? AppTheme.Colors.success.opacity(0.1) : AppTheme.Colors.error.opacity(0.1))
+                )
+            }
+        }
+    }
+
+    // MARK: - Tomorrow Preview Section
+    @ViewBuilder
+    var tomorrowPreviewSection: some View {
+        VStack(spacing: AppTheme.Spacing.md) {
+            // Section header
+            HStack {
+                Image(systemName: "sun.max.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(AppTheme.Colors.accent)
+
+                Text("TOMORROW'S PREVIEW")
+                    .font(AppTheme.Typography.labelSmall(.bold))
+                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .tracking(1.5)
+
+                Spacer()
+            }
+
+            VStack(spacing: AppTheme.Spacing.sm) {
+                // Words due for review
+                if wordsDueTomorrow > 0 {
+                    HStack(spacing: AppTheme.Spacing.sm) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(AppTheme.Colors.tertiary)
+                            .frame(width: 24)
+
+                        Text("\(wordsDueTomorrow) word\(wordsDueTomorrow == 1 ? "" : "s") due for review")
+                            .font(AppTheme.Typography.bodyMedium())
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Spacer()
+                    }
+                }
+
+                // New words coming
+                if newWordsTomorrow > 0 {
+                    HStack(spacing: AppTheme.Spacing.sm) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(AppTheme.Colors.success)
+                            .frame(width: 24)
+
+                        Text("\(newWordsTomorrow) new word\(newWordsTomorrow == 1 ? "" : "s") to learn")
+                            .font(AppTheme.Typography.bodyMedium())
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Spacer()
+                    }
+                }
+
+                // Teaser words
+                if !tomorrowTeaserWords.isEmpty {
+                    HStack(spacing: AppTheme.Spacing.sm) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(AppTheme.Colors.warning)
+                            .frame(width: 24)
+
+                        Text(teaserText)
+                            .font(AppTheme.Typography.bodyMedium(.medium))
+                            .foregroundColor(AppTheme.Colors.accent)
+                            .italic()
+
+                        Spacer()
+                    }
+                }
+            }
+            .padding(AppTheme.Spacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                    .fill(AppTheme.Colors.surface)
+            )
+
+            // Notification reminder
+            if let time = notificationTime {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(AppTheme.Colors.accent)
+
+                    Text("We'll remind you at \(time)")
+                        .font(AppTheme.Typography.labelSmall())
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+
+                    Spacer()
+                }
+                .padding(.horizontal, AppTheme.Spacing.sm)
+            }
+        }
+    }
+
+    private var teaserText: String {
+        if tomorrowTeaserWords.count == 1 {
+            return "\"\(tomorrowTeaserWords[0])\" comes back!"
+        } else if tomorrowTeaserWords.count == 2 {
+            return "\"\(tomorrowTeaserWords[0])\" & \"\(tomorrowTeaserWords[1])\" return!"
+        } else {
+            return "\"\(tomorrowTeaserWords[0])\" and more return!"
+        }
+    }
+
     @ViewBuilder
     private func nextStepButton(for rec: LearningRecommendation) -> some View {
         let (icon, title, subtitle, color, action): (String, String, String, Color, (() -> Void)?) = {
@@ -575,11 +818,32 @@ struct ConfettiParticle: Identifiable {
     var opacity: Double
 }
 
-#Preview {
+#Preview("Basic") {
     SessionCompleteView(
         correct: 15,
         incorrect: 5,
         onRestart: {},
         onDismiss: {}
+    )
+}
+
+#Preview("Full Features") {
+    SessionCompleteView(
+        correct: 18,
+        incorrect: 2,
+        wordsMastered: [],
+        wordsLeveledUp: 5,
+        wordsStartedLearning: 3,
+        strugglingWords: [],
+        onRestart: {},
+        onDismiss: {},
+        wordsDueTomorrow: 12,
+        newWordsTomorrow: 5,
+        tomorrowTeaserWords: ["ubiquitous", "ephemeral"],
+        currentStreak: 7,
+        scoreChange: 2,
+        estimatedScore: 158,
+        notificationTime: "9:00 AM",
+        onShareProgress: {}
     )
 }

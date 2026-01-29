@@ -13,6 +13,8 @@ enum AppTheme {
         static let textPrimary = Color("TextPrimary")
         static let textSecondary = Color("TextSecondary")
         static let textTertiary = Color("TextTertiary")
+        // Higher contrast variant for better accessibility (WCAG AA compliant)
+        static let textTertiaryAccessible = Color(white: 0.55)
 
         static let success = Color("Success")
         static let warning = Color("Warning")
@@ -33,11 +35,38 @@ enum AppTheme {
     }
     
     enum Radius {
+        static let xs: CGFloat = 6   // For smaller elements like badges
         static let sm: CGFloat = 8
         static let md: CGFloat = 12
         static let lg: CGFloat = 16
         static let xl: CGFloat = 24
     }
+
+    // MARK: - Shadow Presets
+    enum Shadow {
+        static func sm(color: Color = .black.opacity(0.1)) -> some View {
+            EmptyView().shadow(color: color, radius: 4, x: 0, y: 2)
+        }
+
+        static func md(color: Color = .black.opacity(0.15)) -> some View {
+            EmptyView().shadow(color: color, radius: 8, x: 0, y: 4)
+        }
+
+        static func lg(color: Color = .black.opacity(0.2)) -> some View {
+            EmptyView().shadow(color: color, radius: 16, x: 0, y: 8)
+        }
+    }
+
+    // MARK: - Animation Presets
+    enum Motion {
+        static let quick = Animation.spring(response: 0.3, dampingFraction: 0.7)
+        static let standard = Animation.spring(response: 0.5, dampingFraction: 0.8)
+        static let slow = Animation.spring(response: 0.8, dampingFraction: 0.7)
+        static let bounce = Animation.spring(response: 0.4, dampingFraction: 0.5)
+    }
+
+    // MARK: - Tap Target
+    static let minTapTarget: CGFloat = 44
     
     enum Typography {
         static func displayLarge(_ weight: Font.Weight = .regular) -> Font {

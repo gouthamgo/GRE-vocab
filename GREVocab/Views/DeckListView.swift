@@ -4,9 +4,21 @@ import SwiftData
 struct DeckListView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: DeckViewModel
+    @Query private var userProgressItems: [UserProgress]
     @State private var selectedFilter: Difficulty? = nil
     @State private var searchText = ""
     @State private var appearAnimation = false
+    @State private var showPaywall = false
+    @State private var selectedLockedDeck: Deck? = nil
+    @State private var isLoading = true
+
+    private var userProgress: UserProgress? {
+        userProgressItems.first
+    }
+
+    private var hasPremiumAccess: Bool {
+        userProgress?.hasPremiumAccess ?? false
+    }
 
     var filteredDecks: [Deck] {
         var decks = viewModel.decks
@@ -36,6 +48,11 @@ struct DeckListView: View {
                     // Stats Overview
                     statsOverview
 
+                    // Premium Upsell Banner
+                    premiumUpsellBanner
+                        .opacity(appearAnimation ? 1 : 0)
+                        .offset(y: appearAnimation ? 0 : 10)
+
                     // Deck Grid
                     deckGrid
 
@@ -45,14 +62,76 @@ struct DeckListView: View {
                 .padding(.horizontal, AppTheme.Spacing.lg)
             }
             .background(AppTheme.Colors.background)
-            .navigationTitle("Decks")
+            .refreshable {
+                await refreshDecks()
+            }
+            .navigationTitle("Words")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(AppTheme.Colors.background, for: .navigationBar)
+            .sheet(isPresented: $showPaywall) {
+                if let userProgress = userProgress {
+                    PaywallView(userProgress: userProgress)
+                }
+            }
         }
         .onAppear {
             viewModel.loadDecks(modelContext: modelContext)
+            // Simulate brief loading then show content
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(AppTheme.Motion.standard) {
+                    isLoading = false
+                }
+            }
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1)) {
                 appearAnimation = true
+            }
+        }
+    }
+
+    // MARK: - Premium Upsell Banner
+    @ViewBuilder
+    private var premiumUpsellBanner: some View {
+        if !hasPremiumAccess && lockedDecksCount > 0 {
+            Button {
+                showPaywall = true
+                HapticManager.shared.lightImpact()
+            } label: {
+                HStack(spacing: AppTheme.Spacing.md) {
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.Colors.warning.opacity(0.15))
+                            .frame(width: 44, height: 44)
+
+                        Image(systemName: "lock.open.fill")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.warning)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Unlock \(lockedWordsCount)+ Words")
+                            .font(AppTheme.Typography.bodyMedium(.bold))
+                            .foregroundColor(AppTheme.Colors.textPrimary)
+
+                        Text("\(lockedDecksCount) premium pack\(lockedDecksCount == 1 ? "" : "s") waiting")
+                            .font(AppTheme.Typography.labelSmall())
+                            .foregroundColor(AppTheme.Colors.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(AppTheme.Colors.warning)
+                }
+                .padding(AppTheme.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                        .fill(AppTheme.Colors.warning.opacity(0.08))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                                .stroke(AppTheme.Colors.warning.opacity(0.2), lineWidth: 1)
+                        )
+                )
             }
         }
     }
@@ -154,7 +233,12 @@ struct DeckListView: View {
     // MARK: - Deck Grid
     private var deckGrid: some View {
         LazyVStack(spacing: AppTheme.Spacing.md) {
-            if filteredDecks.isEmpty {
+            if isLoading {
+                // Skeleton loading state
+                ForEach(0..<3, id: \.self) { _ in
+                    SkeletonDeckCard()
+                }
+            } else if filteredDecks.isEmpty {
                 EmptyStateView(
                     icon: "rectangle.stack.badge.minus",
                     title: "No Decks Found",
@@ -165,21 +249,64 @@ struct DeckListView: View {
                 .padding(.top, AppTheme.Spacing.xxl)
             } else {
                 ForEach(Array(filteredDecks.enumerated()), id: \.element.id) { index, deck in
-                    NavigationLink {
-                        DeckDetailView(deck: deck)
-                    } label: {
-                        DeckCard(deck: deck)
+                    let isLocked = deck.difficulty.isPremium && !hasPremiumAccess
+
+                    if isLocked {
+                        // Locked deck - show paywall on tap
+                        Button {
+                            selectedLockedDeck = deck
+                            showPaywall = true
+                            HapticManager.shared.lightImpact()
+                        } label: {
+                            DeckCard(deck: deck, isLocked: true)
+                        }
+                        .opacity(appearAnimation ? 1 : 0)
+                        .offset(y: appearAnimation ? 0 : 20)
+                        .animation(
+                            .spring(response: 0.5, dampingFraction: 0.8)
+                            .delay(Double(index) * 0.05),
+                            value: appearAnimation
+                        )
+                    } else {
+                        // Unlocked deck - navigate to detail
+                        NavigationLink {
+                            DeckDetailView(deck: deck)
+                        } label: {
+                            DeckCard(deck: deck, isLocked: false)
+                        }
+                        .opacity(appearAnimation ? 1 : 0)
+                        .offset(y: appearAnimation ? 0 : 20)
+                        .animation(
+                            .spring(response: 0.5, dampingFraction: 0.8)
+                            .delay(Double(index) * 0.05),
+                            value: appearAnimation
+                        )
                     }
-                    .opacity(appearAnimation ? 1 : 0)
-                    .offset(y: appearAnimation ? 0 : 20)
-                    .animation(
-                        .spring(response: 0.5, dampingFraction: 0.8)
-                        .delay(Double(index) * 0.05),
-                        value: appearAnimation
-                    )
                 }
             }
         }
+    }
+
+    // MARK: - Refresh
+    private func refreshDecks() async {
+        isLoading = true
+        viewModel.loadDecks(modelContext: modelContext)
+        // Small delay to show refresh indicator
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        withAnimation(AppTheme.Motion.standard) {
+            isLoading = false
+        }
+    }
+
+    // MARK: - Locked count
+    private var lockedDecksCount: Int {
+        viewModel.decks.filter { $0.difficulty.isPremium && !hasPremiumAccess }.count
+    }
+
+    private var lockedWordsCount: Int {
+        viewModel.decks
+            .filter { $0.difficulty.isPremium && !hasPremiumAccess }
+            .reduce(0) { $0 + $1.totalWords }
     }
 }
 
@@ -197,7 +324,7 @@ struct FilterChip: View {
             HStack(spacing: AppTheme.Spacing.xs) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 12, weight: .bold)) // Increased from 10 to 12
                 }
 
                 Text(title)
@@ -215,6 +342,7 @@ struct FilterChip: View {
             .foregroundColor(isSelected ? .white : color)
             .padding(.horizontal, AppTheme.Spacing.md)
             .padding(.vertical, AppTheme.Spacing.sm)
+            .frame(minHeight: AppTheme.minTapTarget) // Ensure minimum tap target
             .background(
                 Capsule()
                     .fill(isSelected ? color : color.opacity(0.1))
@@ -223,8 +351,10 @@ struct FilterChip: View {
                 Capsule()
                     .stroke(isSelected ? .clear : color.opacity(0.3), lineWidth: 1)
             )
+            .contentShape(Capsule()) // Expand tap area to full shape
         }
         .buttonStyle(ScaleButtonStyle())
+        .accessibilityLabel("\(title), \(count) items\(isSelected ? ", selected" : "")")
     }
 }
 

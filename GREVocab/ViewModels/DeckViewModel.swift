@@ -21,12 +21,16 @@ class DeckViewModel {
 
 
 
+    var basicDecks: [Deck] {
+        decks.filter { $0.difficulty == .easy }
+    }
+
     var commonDecks: [Deck] {
-        decks.filter { $0.difficulty == .common }
+        decks.filter { $0.difficulty == .medium }
     }
 
     var advancedDecks: [Deck] {
-        decks.filter { $0.difficulty == .advanced }
+        decks.filter { $0.difficulty == .hard }
     }
 
     var totalWords: Int {

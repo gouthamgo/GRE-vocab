@@ -2,23 +2,35 @@ import Foundation
 import SwiftUI
 
 enum Difficulty: String, Codable, CaseIterable {
-    case common = "Common"
-    case advanced = "Advanced"
-    case expert = "Expert"
+    case easy = "Basic"
+    case medium = "Common"
+    case hard = "Advanced"
+
+    var displayName: String {
+        rawValue
+    }
 
     var themeColor: Color {
         switch self {
-        case .common: return AppTheme.Colors.secondary
-        case .advanced: return AppTheme.Colors.tertiary
-        case .expert: return Color.purple
+        case .easy: return AppTheme.Colors.success
+        case .medium: return AppTheme.Colors.warning
+        case .hard: return AppTheme.Colors.error
         }
     }
 
     var icon: String {
         switch self {
-        case .common: return "crown.fill"
-        case .advanced: return "bolt.fill"
-        case .expert: return "sparkles"
+        case .easy: return "star"
+        case .medium: return "star.leadinghalf.filled"
+        case .hard: return "star.fill"
+        }
+    }
+
+    /// Whether this difficulty level requires premium subscription
+    var isPremium: Bool {
+        switch self {
+        case .easy: return false
+        case .medium, .hard: return false // All free for now
         }
     }
 }
